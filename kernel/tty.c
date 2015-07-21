@@ -264,9 +264,11 @@ PRIVATE void tty_dev_write(TTY* tty)
         if (tty->tty_left_cnt) {
             if (ch >= ' ' && ch <= '~') { /* printable */
                 out_char(tty->console, ch);
-                void * p = tty->tty_req_buf +
-                       tty->tty_trans_cnt;
+
+                //输出到控制台
+                void * p = tty->tty_req_buf + tty->tty_trans_cnt;
                 phys_copy(p, (void *)va2la(TASK_TTY, &ch), 1);
+
                 tty->tty_trans_cnt++;
                 tty->tty_left_cnt--;
             }
@@ -282,7 +284,10 @@ PRIVATE void tty_dev_write(TTY* tty)
                 msg.type = RESUME_PROC;
                 msg.PROC_NR = tty->tty_procnr;
                 msg.CNT = tty->tty_trans_cnt;
+
+                //调用函数
                 send_recv(SEND, tty->tty_caller, &msg);
+
                 tty->tty_left_cnt = 0;
             }
         }

@@ -56,7 +56,6 @@ PUBLIC int kernel_main()
             prio      = 5;     //设定优先级为5
         }
 
-        //初始化进程表
         strcpy(p_proc->name, p_task->name); /* 设定进程名称 */
         p_proc->pid = i;            /* 设定pid */
 
@@ -100,11 +99,12 @@ PUBLIC int kernel_main()
         selector_ldt += 1 << 3;
     }
 
-         /*proc_table[NR_TASKS + 0].nr_tty = 0;*/
-         /*proc_table[NR_TASKS + 1].nr_tty = 1;*/
-         /*proc_table[NR_TASKS + 2].nr_tty = 1;*/
+        /* proc_table[NR_TASKS + 0].nr_tty = 0; */
+        /* proc_table[NR_TASKS + 1].nr_tty = 1; */
+        /* proc_table[NR_TASKS + 2].nr_tty = 1; */
 
 
+    //初始化进程
     k_reenter = 0;
     ticks = 0;
 
@@ -131,11 +131,12 @@ PUBLIC int get_ticks()
     return msg.RETVAL;
 }
 
+
 /*======================================================================*
                                TestA
  *======================================================================*/
 
-//A进程
+//1号终端
 void TestA()
 {
     int fd;
@@ -174,10 +175,10 @@ void TestA()
         }
         else if (strcmp(rdbuf, "filemng") == 0)
         {
-            //切换进程
             //printf("File Manager is already running on CONSOLE-1 ! \n");
             //continue;
-            TestB();
+            /*TestB();*/
+            FileManager(fd_stdin, fd_stdout);
         }
         else if (strcmp(rdbuf, "help") == 0)
         {
@@ -260,7 +261,13 @@ void TestA()
 
 /*======================================================================*
                                TestB
- *======================================================================*/
+ *======================================================================
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin  == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+
+*/
 //文件管理
 void TestB()
 {
@@ -815,3 +822,131 @@ void ProcessManage()
     }
     printf("=============================================================================\n");
 }
+
+void FileManager(int fd_stdin, int fd_stdout)
+{
+    char rdbuf[128];
+    char cmd[8];
+    char filename[120];
+    char buf[1024];
+    int m,n;
+    printf("                        ==================================\n");
+    printf("                                    File Manager           \n");
+    printf("                                 Kernel on Orange's \n\n");
+    printf("                        ==================================\n");
+    while (1) {
+        printf("$ ");
+        int r = read(fd_stdin, rdbuf, 70);
+        rdbuf[r] = 0;
+
+
+
+        if (strcmp(rdbuf, "help") == 0)
+        {
+            printf("=============================================================================\n");
+            printf("Command List     :\n");
+            printf("1. create [filename]       : Create a new file \n");
+            printf("2. read [filename]         : Read the file\n");
+            printf("3. write [filename]        : Write at the end of the file\n");
+            printf("4. delete [filename]       : Delete the file\n");
+            printf("5. help                    : Display the help message\n");
+            printf("==============================================================================\n");
+        }
+        else if (strcmp(rdbuf, "help") == 0)
+        {
+
+        }
+        else
+        {
+            int fd;
+            int i = 0;
+            int j = 0;
+            char temp = -1;
+            while(rdbuf[i]!=' ')
+            {
+                cmd[i] = rdbuf[i];
+                i++;
+            }
+            cmd[i++] = 0;
+            while(rdbuf[i] != 0)
+            {
+                filename[j] = rdbuf[i];
+                i++;
+                j++;
+            }
+            filename[j] = 0;
+
+            if (strcmp(cmd, "create") == 0)
+            {
+                fd = open(filename, O_CREAT | O_RDWR);
+                if (fd == -1)
+                {
+                    printf("Failed to create file! Please check the fileaname!\n");
+                    continue ;
+                }
+                buf[0] = 0;
+                write(fd, buf, 1);
+                printf("File created: %s (fd %d)\n", filename, fd);
+                close(fd);
+            }
+            else if (strcmp(cmd, "read") == 0)
+            {
+                fd = open(filename, O_RDWR);
+                if (fd == -1)
+                {
+                    printf("Failed to open file! Please check the fileaname!\n");
+                    continue ;
+                }
+
+                n = read(fd, buf, 1024);
+
+                printf("%s\n", buf);
+                close(fd);
+
+            }
+            else if (strcmp(cmd, "write") == 0)
+            {
+                fd = open(filename, O_RDWR);
+                if (fd == -1)
+                {
+                    printf("Failed to open file! Please check the fileaname!\n");
+                    continue ;
+                }
+
+                m = read(fd_stdin, rdbuf,80);
+                rdbuf[m] = 0;
+
+                n = write(fd, rdbuf, m+1);
+                close(fd);
+            }
+            else if (strcmp(cmd, "delete") == 0)
+            {
+                m=unlink(filename);
+                if (m == 0)
+                {
+                    printf("File deleted!\n");
+                    continue;
+                }
+                else
+                {
+                    printf("Failed to delete file! Please check the fileaname!\n");
+                    continue;
+                }
+
+            }
+            else
+            {
+                printf("Command not found, Please check!\n");
+                continue;
+            }
+
+
+
+        }
+
+
+    }
+
+    assert(0); /* never arrive here */
+}
+
