@@ -68,6 +68,7 @@ PRIVATE void    put_key     (TTY* tty, u32 key);
 /**
  * <Ring 1> Main loop of task TTY.
  *****************************************************************************/
+
 //轮询TTY
 PUBLIC void task_tty()
 {
@@ -191,7 +192,7 @@ PUBLIC void in_process(TTY* tty, u32 key)
         case F11:
         case F12:
             if ((key & FLAG_CTRL_L) ||
-                (key & FLAG_CTRL_R)) {/* Alt + F1~F12 */
+                (key & FLAG_CTRL_R)) {/* CTRL + F1~F12 */
                 select_console(raw_code - F1);
             }
             break;
