@@ -1,3 +1,11 @@
+
+; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;                               fat12hdr.inc
+; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;                                                     Forrest Yu, 2005
+; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 ; FAT12 磁盘的头
 ; ----------------------------------------------------------------------
 BS_OEMName	DB 'ForrestY'	; OEM String, 必须 8 个字节
@@ -27,21 +35,9 @@ BS_FileSysType	DB 'FAT12   '	; 文件系统类型, 必须 8个字节
 ; -------------------------------------------------------------------------
 ; 基于 FAT12 头的一些常量定义，如果头信息改变，下面的常量可能也要做相应改变
 ; -------------------------------------------------------------------------
-; BPB_FATSz16
-FATSz			equ	9
-
-; 根目录占用空间:
-; RootDirSectors = ((BPB_RootEntCnt*32)+(BPB_BytsPerSec–1))/BPB_BytsPerSec
-; 但如果按照此公式代码过长，故定义此宏
-RootDirSectors		equ	14
-
-; Root Directory 的第一个扇区号	= BPB_RsvdSecCnt + (BPB_NumFATs * FATSz)
-SectorNoOfRootDirectory	equ	19
-
-; FAT1 的第一个扇区号	= BPB_RsvdSecCnt
-SectorNoOfFAT1		equ	1
-
-; DeltaSectorNo = BPB_RsvdSecCnt + (BPB_NumFATs * FATSz) - 2
-; 文件的开始Sector号 = DirEntry中的开始Sector号 + 根目录占用Sector数目
-;                      + DeltaSectorNo
-DeltaSectorNo		equ	17
+FATSz			equ	9	; BPB_FATSz16
+RootDirSectors		equ	14	; 根目录占用空间: RootDirSectors = ((BPB_RootEntCnt * 32) + (BPB_BytsPerSec – 1)) / BPB_BytsPerSec; 但如果按照此公式代码过长
+SectorNoOfRootDirectory	equ	19	; Root Directory 的第一个扇区号	= BPB_RsvdSecCnt + (BPB_NumFATs * FATSz)
+SectorNoOfFAT1		equ	1	; FAT1 的第一个扇区号	= BPB_RsvdSecCnt
+DeltaSectorNo		equ	17	; DeltaSectorNo = BPB_RsvdSecCnt + (BPB_NumFATs * FATSz) - 2
+					; 文件的开始Sector号 = DirEntry中的开始Sector号 + 根目录占用Sector数目 + DeltaSectorNo
