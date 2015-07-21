@@ -41,7 +41,7 @@ PUBLIC int kernel_main()
             p_task    = task_table + i;
             privilege = PRIVILEGE_TASK;
             rpl       = RPL_TASK;
-            eflags    = 0x1202; /* IF=1, IOPL=1, bit 2 is always 1 */
+            eflags    = 0x1202; /* IF=1, IOPL=1, bit 2 is always 1   1 0010 0000 0010(2)*/
             prio      = 15;     //设定优先级为15
         }
         else
@@ -49,12 +49,12 @@ PUBLIC int kernel_main()
             p_task    = user_proc_table + (i - NR_TASKS);
             privilege = PRIVILEGE_USER;
             rpl       = RPL_USER;
-            eflags    = 0x202; /* IF=1, bit 2 is always 1 */
+            eflags    = 0x202; /* IF=1, bit 2 is always 1              0010 0000 0010(2)*/
             prio      = 5;     //设定优先级为5
         }
 
-        strcpy(p_proc->name, p_task->name); /* name of the process */
-        p_proc->pid = i;            /* pid */
+        strcpy(p_proc->name, p_task->name); /* 设定进程名称 */
+        p_proc->pid = i;            /* 设定pid */
 
         p_proc->ldt_sel = selector_ldt;
 
@@ -103,7 +103,7 @@ PUBLIC int kernel_main()
     k_reenter = 0;
     ticks = 0;
 
-    p_proc_ready    = proc_table;
+    p_proc_ready = proc_table;
 
     init_clock();
         init_keyboard();
