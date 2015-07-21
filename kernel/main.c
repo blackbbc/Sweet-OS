@@ -34,10 +34,13 @@ PUBLIC int kernel_main()
     int   eflags;
     int   i, j;
     int   prio;
+
+    //启动进程
     for (i = 0; i < NR_TASKS+NR_PROCS; i++)
+    /*for (i = 0; i < NR_TASKS; i++)*/
     {
         if (i < NR_TASKS)
-        {     /* 任务 */
+        {   /* 任务 */
             p_task    = task_table + i;
             privilege = PRIVILEGE_TASK;
             rpl       = RPL_TASK;
@@ -45,7 +48,7 @@ PUBLIC int kernel_main()
             prio      = 15;     //设定优先级为15
         }
         else
-        {                  /* 用户进程 */
+        {   /* 用户进程 */
             p_task    = user_proc_table + (i - NR_TASKS);
             privilege = PRIVILEGE_USER;
             rpl       = RPL_USER;
@@ -53,6 +56,7 @@ PUBLIC int kernel_main()
             prio      = 5;     //设定优先级为5
         }
 
+        //初始化进程表
         strcpy(p_proc->name, p_task->name); /* 设定进程名称 */
         p_proc->pid = i;            /* 设定pid */
 
@@ -96,9 +100,10 @@ PUBLIC int kernel_main()
         selector_ldt += 1 << 3;
     }
 
-        /* proc_table[NR_TASKS + 0].nr_tty = 0; */
-        /* proc_table[NR_TASKS + 1].nr_tty = 1; */
-        /* proc_table[NR_TASKS + 2].nr_tty = 1; */
+         /*proc_table[NR_TASKS + 0].nr_tty = 0;*/
+         /*proc_table[NR_TASKS + 1].nr_tty = 1;*/
+         /*proc_table[NR_TASKS + 2].nr_tty = 1;*/
+
 
     k_reenter = 0;
     ticks = 0;
@@ -106,7 +111,7 @@ PUBLIC int kernel_main()
     p_proc_ready = proc_table;
 
     init_clock();
-        init_keyboard();
+    init_keyboard();
 
     restart();
 
@@ -170,10 +175,12 @@ void TestA()
         }
         else if (strcmp(rdbuf, "filemng") == 0)
         {
-            printf("File Manager is already running on CONSOLE-1 ! \n");
-            continue;
-
-        }else if (strcmp(rdbuf, "help") == 0)
+            //切换进程
+            //printf("File Manager is already running on CONSOLE-1 ! \n");
+            //continue;
+            TestB();
+        }
+        else if (strcmp(rdbuf, "help") == 0)
         {
             help();
         }
@@ -255,7 +262,7 @@ void TestA()
 /*======================================================================*
                                TestB
  *======================================================================*/
-//二号终端
+//文件管理
 void TestB()
 {
     char tty_name[] = "/dev_tty1";

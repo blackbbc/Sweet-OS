@@ -55,6 +55,7 @@ PUBLIC void keyboard_handler(int irq)
 {
 	u8 scan_code = in_byte(KB_DATA);
 
+	//缓冲区是一个队列
 	if (kb_in.count < KB_IN_BYTES) {
 		*(kb_in.p_head) = scan_code;
 		kb_in.p_head++;
