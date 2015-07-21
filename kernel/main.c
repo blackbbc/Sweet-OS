@@ -136,7 +136,7 @@ PUBLIC int get_ticks()
                                TestA
  *======================================================================*/
 
-//1号终端
+//终端1
 void TestA()
 {
     int fd;
@@ -687,7 +687,73 @@ L1: printf("Please Input The Line Position where you put your Chessman (x): ");
 
 void TestC()
 {
-    spin("TestC");
+    int fd;
+    int i, n;
+
+    char tty_name[] = "/dev_tty0";
+
+    char rdbuf[128];
+
+
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin  == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+
+//  char filename[MAX_FILENAME_LEN+1] = "zsp01";
+    const char bufw[80] = {0};
+//  const int rd_bytes = 3;
+//  char bufr[rd_bytes];
+
+    clear();
+    printf("                        ==================================\n");
+    printf("                                   MyTinix v1.0.2             \n");
+    printf("                                 Kernel on Orange's \n\n");
+    printf("                                     Welcome !\n");
+    printf("                        ==================================\n");
+
+    while (1) {
+        printl("[root@localhost /] ");
+        int r = read(fd_stdin, rdbuf, 70);
+        rdbuf[r] = 0;
+        //show();
+        if (strcmp(rdbuf, "process") == 0)
+        {
+            ProcessManage();
+        }
+        else if (strcmp(rdbuf, "filemng") == 0)
+        {
+            //printf("File Manager is already running on CONSOLE-1 ! \n");
+            //continue;
+            /*TestB();*/
+            FileManager(fd_stdin, fd_stdout);
+        }
+        else if (strcmp(rdbuf, "help") == 0)
+        {
+            help();
+        }
+        else if (strcmp(rdbuf, "runttt") == 0)
+        {
+
+            TTT(fd_stdin, fd_stdout);
+        }
+
+        else if (strcmp(rdbuf, "clear") == 0)
+        {
+            clear();
+            printf("                        ==================================\n");
+            printf("                                   MyTinix v1.0.2             \n");
+            printf("                                 Kernel on Orange's \n\n");
+            printf("                                     Welcome !\n");
+            printf("                        ==================================\n");
+        }
+
+
+        else
+            printf("Command not found, please check!\n");
+    }
+
+
 }
 
 void TTT(int fd_stdin,int fd_stdout)
