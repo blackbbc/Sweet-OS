@@ -136,6 +136,7 @@ void TestA()
 {
     //0号终端
     char tty_name[] = "/dev_tty0";
+    char username[128];
     int fd;
 
     int isLogin = 0;
@@ -155,7 +156,7 @@ void TestA()
     printl("Sweetinux v1.0.0 tty0\n\n");
 
     while (1) {
-        login(fd_stdin, fd_stdout, &isLogin);
+        login(fd_stdin, fd_stdout, &isLogin, username);
 
         //必须要清空数组
         clearArr(rdbuf, 128);
@@ -193,13 +194,6 @@ void TestA()
         }
         //清空缓冲区
         rdbuf[r] = 0;
-
-        /*printl(rdbuf);*/
-        /*printf("\n");*/
-        /*printl(cmd);*/
-        /*printf("\n");*/
-        /*printl(arg1);*/
-        /*printf("\n");*/
 
         if (strcmp(cmd, "process") == 0)
         {
@@ -337,6 +331,18 @@ void TestA()
             close(fd);
             //最后删除文件
             unlink(arg1);
+        }
+        else if (strcmp(cmd, "useradd") == 0)
+        {
+            doUserAdd(arg1, arg2);
+        }
+        else if (strcmp(cmd, "userdel") == 0)
+        {
+            printl("useradd\n");
+        }
+        else if (strcmp(cmd, "passwd") == 0)
+        {
+            printl("passwd");
         }
         else
             printf("Command not found, please check!\n");
@@ -761,33 +767,82 @@ char* findpass(char *src)
     return pass;
 }
 
-//删除用户
-/*void deluser(char *src)*/
-/*{*/
-    /*char *p1, *p2;*/
+/*删除用户*/
+void doUserDel(char *username)
+{
+    char passwd[1024];
+    char passFilename[128] = "passwd";
+    char *p1, *p2;
 
-    /*p1 = src;*/
-    /*p2 = src;*/
+    //获取密码文件
+    int fd;
+    fd = open(passFilename, O_RDWR);
+    read(fd, passwd, 1024);
+    close(fd);
 
-    /*while (p1 && *p1 != ' ')*/
-    /*{*/
-        /*p1++;*/
-    /*}*/
-    /*p1++;*/
+    char *temp = strcat(username, ":");
+    temp = strstr(passwd, temp);
 
-    /*while (p1 && *p1 != '\0')*/
-    /*{*/
-        /*if (flag && *p1 != ':')*/
-        /*{*/
-            /**p2 = *p1;*/
-            /*p1++;*/
-            /*p2++;*/
-        /*}*/
-    /*}*/
-/*}*/
+    if (!temp)
+    {
+        //用户不存在，不用删除
+        /*printl("Login incorrect");*/
+        /*printl("\n");*/
+    }
+    else
+    {
+        //定位到那个位置
+        char *myPass = findpass(temp);
+
+        //处理这一堆鬼
+        p1 = myPass;
+        p2 = myPass;
+
+        while (p1 && *p1 != ' ')
+        {
+            p1++;
+        }
+        p1++;
+
+        while (p1 && *p1 != '\0')
+        {
+            *p2 = *p1;
+            p1++;
+            p2++;
+        }
+
+        //做尾处理
+        p2 = 0;
+    }
+}
+
+void doUserAdd(char *username, char *password)
+{
+    char passwd[1024];
+    char passFilename[128] = "passwd";
+    char *p1, *p2;
+
+    //获取密码文件
+    int fd;
+    fd = open(passFilename, O_RDWR);
+    read(fd, passwd, 1024);
+    close(fd);
+
+    char *newUser = strcat(username, ":");
+    strcat(newUser, password);
+    strcat(newUser, " ");
+
+    strcat(passwd, newUser);
+
+    printl(passwd);
+
+    fd = open(passFilename, O_RDWR);
+    write(fd, passwd, 1024);
+    close(fd);
+}
 
 
-void login(int fd_stdin, int fd_stdout, int *isLogin)
+void login(int fd_stdin, int fd_stdout, int *isLogin, char *user)
 {
     char username[128];
     char password[128];
@@ -831,6 +886,9 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
         {
             printl("login: ");
             int r = read(fd_stdin, username, 128);
+            if (strcmp(username, "") == 0)
+                continue;
+
             step = 1;
         }
         else if (step == 1)
@@ -838,13 +896,15 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
             printl("Password: ");
             int r = read(fd_stdin, password, 128);
 
+            if (strcmp(username, "") == 0)
+                continue;
+
             char *temp = strcat(username, ":");
             temp = strstr(passwd, temp);
 
             if (!temp)
             {
-                printl("Login incorrect");
-                printl("\n");
+                printl("Login incorrect\n\n");
             }
             else
             {
@@ -852,12 +912,12 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
                 if (strcmp(myPass, password) == 0)
                 {
                     *isLogin = 1;
+                    user = username;
                     printTitle();
                 }
                 else
                 {
-                    printl("Login incorrect");
-                    printl("\n");
+                    printl("Login incorrect\n\n");
                 }
             }
 
