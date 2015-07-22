@@ -137,6 +137,7 @@ void TestA()
     //0号终端
     char tty_name[] = "/dev_tty0";
     char username[128];
+    char password[128];
     int fd;
 
     int isLogin = 0;
@@ -156,7 +157,7 @@ void TestA()
     printl("Sweetinux v1.0.0 tty0\n\n");
 
     while (1) {
-        login(fd_stdin, fd_stdout, &isLogin, username);
+        login(fd_stdin, fd_stdout, &isLogin, username, password);
 
         //必须要清空数组
         clearArr(rdbuf, 128);
@@ -165,7 +166,9 @@ void TestA()
         clearArr(arg2, 128);
         clearArr(buf, 1024);
 
-        printl("root@sweet:~$ ");
+        printl(username);
+        printl("\n");
+        printf("%s@sweet:~$ ", username);
 
         int r = read(fd_stdin, rdbuf, 128);
 
@@ -853,7 +856,7 @@ void doUserAdd(char *username, char *password)
 }
 
 
-void login(int fd_stdin, int fd_stdout, int *isLogin, char *user)
+void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
 {
     char username[128];
     char password[128];
@@ -923,7 +926,8 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user)
                 if (strcmp(myPass, password) == 0)
                 {
                     *isLogin = 1;
-                    user = username;
+                    memcpy(user, username, 128);
+                    memcpy(pass, password, 128);
                     printTitle();
                 }
                 else
