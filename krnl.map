@@ -192,7 +192,7 @@ LOAD fs/disklog.o
  *(.iplt)
  .iplt          0x0000000000000000        0x0 kernel/kernel.o
 
-.text           0x0000000000001000     0xb892
+.text           0x0000000000001000     0xb886
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -363,30 +363,30 @@ LOAD fs/disklog.o
                 0x00000000000095b5                get_inode
                 0x0000000000009723                put_inode
                 0x0000000000009768                sync_inode
- .text          0x0000000000009885      0xb4c fs/open.o
+ .text          0x0000000000009885      0xb40 fs/open.o
                 0x0000000000009885                do_open
-                0x0000000000009d22                do_close
-                0x0000000000009d7a                do_lseek
- .text          0x000000000000a3d1      0x205 fs/misc.o
-                0x000000000000a3d1                search_file
-                0x000000000000a54a                strip_path
- .text          0x000000000000a5d6      0x522 fs/read_write.o
-                0x000000000000a5d6                do_rdwt
- .text          0x000000000000aaf8      0x8f6 fs/link.o
-                0x000000000000aaf8                do_unlink
- .text          0x000000000000b3ee     0x14a4 fs/disklog.o
-                0x000000000000b3ee                do_disklog
-                0x000000000000b499                disklog
-                0x000000000000ba43                dump_fd_graph
+                0x0000000000009d16                do_close
+                0x0000000000009d6e                do_lseek
+ .text          0x000000000000a3c5      0x205 fs/misc.o
+                0x000000000000a3c5                search_file
+                0x000000000000a53e                strip_path
+ .text          0x000000000000a5ca      0x522 fs/read_write.o
+                0x000000000000a5ca                do_rdwt
+ .text          0x000000000000aaec      0x8f6 fs/link.o
+                0x000000000000aaec                do_unlink
+ .text          0x000000000000b3e2     0x14a4 fs/disklog.o
+                0x000000000000b3e2                do_disklog
+                0x000000000000b48d                disklog
+                0x000000000000ba37                dump_fd_graph
  *(.gnu.warning)
 
 .fini
  *(SORT(.fini))
-                0x000000000000c892                PROVIDE (__etext, .)
-                0x000000000000c892                PROVIDE (_etext, .)
-                0x000000000000c892                PROVIDE (etext, .)
+                0x000000000000c886                PROVIDE (__etext, .)
+                0x000000000000c886                PROVIDE (_etext, .)
+                0x000000000000c886                PROVIDE (etext, .)
 
-.rodata         0x000000000000c8a0     0x23d7
+.rodata         0x000000000000c8a0     0x23c7
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata        0x000000000000c8a0       0x47 kernel/start.o
  *fill*         0x000000000000c8e7        0x1 
@@ -416,11 +416,11 @@ LOAD fs/disklog.o
  *fill*         0x000000000000e00b        0x1 
  .rodata        0x000000000000e00c      0x206 fs/main.o
  *fill*         0x000000000000e212        0x2 
- .rodata        0x000000000000e214      0x138 fs/open.o
- .rodata        0x000000000000e34c      0x164 fs/read_write.o
- .rodata        0x000000000000e4b0      0x19d fs/link.o
- *fill*         0x000000000000e64d        0x3 
- .rodata        0x000000000000e650      0x627 fs/disklog.o
+ .rodata        0x000000000000e214      0x128 fs/open.o
+ .rodata        0x000000000000e33c      0x164 fs/read_write.o
+ .rodata        0x000000000000e4a0      0x19d fs/link.o
+ *fill*         0x000000000000e63d        0x3 
+ .rodata        0x000000000000e640      0x627 fs/disklog.o
 
 .rodata1
  *(.rodata1)
@@ -428,62 +428,62 @@ LOAD fs/disklog.o
 .eh_frame_hdr
  *(.eh_frame_hdr)
 
-.eh_frame       0x000000000000ec78     0x11e4
+.eh_frame       0x000000000000ec68     0x11e4
  *(.eh_frame)
- .eh_frame      0x000000000000ec78       0x38 kernel/start.o
- .eh_frame      0x000000000000ecb0      0x2ac kernel/main.o
+ .eh_frame      0x000000000000ec68       0x38 kernel/start.o
+ .eh_frame      0x000000000000eca0      0x2ac kernel/main.o
                                         0x2c4 (size before relaxing)
- .eh_frame      0x000000000000ef5c       0x60 kernel/clock.o
+ .eh_frame      0x000000000000ef4c       0x60 kernel/clock.o
                                          0x78 (size before relaxing)
- .eh_frame      0x000000000000efbc       0xe0 kernel/keyboard.o
+ .eh_frame      0x000000000000efac       0xe0 kernel/keyboard.o
                                          0xf8 (size before relaxing)
- .eh_frame      0x000000000000f09c      0x13c kernel/tty.o
+ .eh_frame      0x000000000000f08c      0x13c kernel/tty.o
                                         0x154 (size before relaxing)
- .eh_frame      0x000000000000f1d8      0x148 kernel/console.o
+ .eh_frame      0x000000000000f1c8      0x148 kernel/console.o
                                         0x160 (size before relaxing)
- .eh_frame      0x000000000000f320       0x60 kernel/i8259.o
+ .eh_frame      0x000000000000f310       0x60 kernel/i8259.o
                                          0x78 (size before relaxing)
- .eh_frame      0x000000000000f380       0xb0 kernel/protect.o
+ .eh_frame      0x000000000000f370       0xb0 kernel/protect.o
                                          0xc8 (size before relaxing)
- .eh_frame      0x000000000000f430      0x1e0 kernel/proc.o
+ .eh_frame      0x000000000000f420      0x1e0 kernel/proc.o
                                         0x1f8 (size before relaxing)
- .eh_frame      0x000000000000f610       0x1c kernel/systask.o
+ .eh_frame      0x000000000000f600       0x1c kernel/systask.o
                                          0x34 (size before relaxing)
- .eh_frame      0x000000000000f62c      0x210 kernel/hd.o
+ .eh_frame      0x000000000000f61c      0x210 kernel/hd.o
                                         0x228 (size before relaxing)
- .eh_frame      0x000000000000f83c       0x40 lib/printf.o
+ .eh_frame      0x000000000000f82c       0x40 lib/printf.o
                                          0x58 (size before relaxing)
- .eh_frame      0x000000000000f87c       0x68 lib/vsprintf.o
+ .eh_frame      0x000000000000f86c       0x68 lib/vsprintf.o
                                          0x80 (size before relaxing)
- .eh_frame      0x000000000000f8e4       0x80 lib/klib.o
+ .eh_frame      0x000000000000f8d4       0x80 lib/klib.o
                                          0x98 (size before relaxing)
- .eh_frame      0x000000000000f964       0x9c lib/misc.o
+ .eh_frame      0x000000000000f954       0x9c lib/misc.o
                                          0xb4 (size before relaxing)
- .eh_frame      0x000000000000fa00       0x20 lib/open.o
+ .eh_frame      0x000000000000f9f0       0x20 lib/open.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fa20       0x20 lib/read.o
+ .eh_frame      0x000000000000fa10       0x20 lib/read.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fa40       0x20 lib/write.o
+ .eh_frame      0x000000000000fa30       0x20 lib/write.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fa60       0x20 lib/close.o
+ .eh_frame      0x000000000000fa50       0x20 lib/close.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fa80       0x20 lib/unlink.o
+ .eh_frame      0x000000000000fa70       0x20 lib/unlink.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000faa0       0x20 lib/getpid.o
+ .eh_frame      0x000000000000fa90       0x20 lib/getpid.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fac0       0x20 lib/syslog.o
+ .eh_frame      0x000000000000fab0       0x20 lib/syslog.o
                                          0x38 (size before relaxing)
- .eh_frame      0x000000000000fae0      0x134 fs/main.o
+ .eh_frame      0x000000000000fad0      0x134 fs/main.o
                                         0x14c (size before relaxing)
- .eh_frame      0x000000000000fc14      0x128 fs/open.o
+ .eh_frame      0x000000000000fc04      0x128 fs/open.o
                                         0x140 (size before relaxing)
- .eh_frame      0x000000000000fd3c       0x48 fs/misc.o
+ .eh_frame      0x000000000000fd2c       0x48 fs/misc.o
                                          0x60 (size before relaxing)
- .eh_frame      0x000000000000fd84       0x2c fs/read_write.o
+ .eh_frame      0x000000000000fd74       0x2c fs/read_write.o
                                          0x44 (size before relaxing)
- .eh_frame      0x000000000000fdb0       0x2c fs/link.o
+ .eh_frame      0x000000000000fda0       0x2c fs/link.o
                                          0x44 (size before relaxing)
- .eh_frame      0x000000000000fddc       0x80 fs/disklog.o
+ .eh_frame      0x000000000000fdcc       0x80 fs/disklog.o
                                          0x98 (size before relaxing)
 
 .gcc_except_table
@@ -491,7 +491,7 @@ LOAD fs/disklog.o
 
 .exception_ranges
  *(.exception_ranges .exception_ranges*)
-                0x000000000000fe5c                . = (ALIGN (0x1000) - ((0x1000 - .) & 0xfff))
+                0x000000000000fe4c                . = (ALIGN (0x1000) - ((0x1000 - .) & 0xfff))
                 0x0000000000010000                . = DATA_SEGMENT_ALIGN (0x1000, 0x1000)
 
 .eh_frame
