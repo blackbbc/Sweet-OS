@@ -78,8 +78,8 @@ struct task {
 #define proc2pid(x) (x - proc_table)
 
 /* Number of tasks & procs */
-#define NR_TASKS    4 //TTY SYS HD FS进程
-#define NR_PROCS    3 //3个用户终端
+#define NR_TASKS    4 //TTY SYS HD FS任务
+#define NR_PROCS    3 //3个用户进程
 #define FIRST_PROC  proc_table[0]
 #define LAST_PROC   proc_table[NR_TASKS + NR_PROCS - 1]
 
