@@ -166,8 +166,6 @@ void TestA()
         clearArr(arg2, 128);
         clearArr(buf, 1024);
 
-        printl(username);
-        printl("\n");
         printf("%s@sweet:~$ ", username);
 
         int r = read(fd_stdin, rdbuf, 128);
@@ -345,7 +343,7 @@ void TestA()
         }
         else if (strcmp(cmd, "passwd") == 0)
         {
-            printl("passwd");
+            doPassWd(username, password, fd_stdin);
         }
         else
             printf("Command not found, please check!\n");
@@ -855,6 +853,48 @@ void doUserAdd(char *username, char *password)
     close(fd);
 }
 
+void doPassWd(char *username, char *password, int fd_stdin)
+{
+    char currentPassword[128];
+    char newPassword[128];
+
+    int step = 0;
+    while(1)
+    {
+        if (step == 0)
+        {
+            printl("Please input your current password:");
+            int r = read(fd_stdin, currentPassword, 128);
+            if (strcmp(currentPassword, "") == 0)
+                continue;
+            step = 1;
+        }
+        else if (step == 1)
+        {
+            if (strcmp(password, currentPassword) == 0)
+            {
+                printl("Please input your new password:");
+                int r = read(fd_stdin, newPassword, 128);
+                if (strcmp(newPassword, "") == 0)
+                    continue;
+                step = 2;
+            }
+            else
+            {
+                printl("Verify failed\n");
+                return;
+            }
+        }
+        else if (step == 2)
+        {
+            doUserDel(username);
+            doUserAdd(username, newPassword);
+            printl("Your password changed successfully\n");
+            return;
+        }
+    }
+}
+
 
 void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
 {
@@ -865,6 +905,10 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
 
     char passwd[1024];
     char passFilename[128] = "passwd";
+
+    clearArr(username, 128);
+    clearArr(password, 128);
+    clearArr(passwd, 1024);
 
     /*初始化密码文件*/
     fd = open(passFilename, O_CREAT | O_RDWR);
@@ -903,6 +947,8 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
             if (strcmp(username, "") == 0)
                 continue;
 
+            /*printl(username);*/
+            /*printl("\n");*/
             step = 1;
         }
         else if (step == 1)
@@ -910,11 +956,16 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
             printl("Password: ");
             int r = read(fd_stdin, password, 128);
 
+            /*printl(password);*/
+            /*printl("\n");*/
+
             if (strcmp(username, "") == 0)
                 continue;
 
-            char *temp = strcat(username, ":");
-            temp = strstr(passwd, temp);
+            char tempArr[128];
+            memcpy(tempArr, username, 128);
+            strcat(tempArr, ":");
+            char *temp = strstr(passwd, tempArr);
 
             if (!temp)
             {
@@ -923,6 +974,10 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
             else
             {
                 char *myPass = findpass(temp);
+
+                /*printl(myPass);*/
+                /*printl("\n");*/
+
                 if (strcmp(myPass, password) == 0)
                 {
                     *isLogin = 1;
