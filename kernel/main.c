@@ -141,50 +141,91 @@ PUBLIC int get_ticks()
 //1号进程
 void TestA()
 {
-    int fd;
-    int i, n;
-
     char tty_name[] = "/dev_tty0";
 
     char rdbuf[128];
+    char cmd[128];
+    char arg1[128];
 
     int fd_stdin  = open(tty_name, O_RDWR);
     assert(fd_stdin  == 0);
     int fd_stdout = open(tty_name, O_RDWR);
     assert(fd_stdout == 1);
 
-    const char bufw[80] = {0};
-
     printTitle();
 
     while (1) {
         printl("root@sweet:~$ ");
-        int r = read(fd_stdin, rdbuf, 70);
+        int r = read(fd_stdin, rdbuf, 128);
+
+        //解析命令
+        int i = 0;
+        int j = 0;
+        while(rdbuf[i] != ' ' && rdbuf[i] != 0)
+        {
+            cmd[i] = rdbuf[i];
+            i++;
+        }
+        //先使用，再加
+        cmd[i++] = 0;
+        while(rdbuf[i] != ' ' && rdbuf[i] != 0)
+        {
+            arg1[j] = rdbuf[i];
+            i++;
+            j++;
+        }
+        arg1[j] = 0;
+        //清空缓冲区
         rdbuf[r] = 0;
-        if (strcmp(rdbuf, "process") == 0)
+
+        /*printl(rdbuf);*/
+        /*printf("\n");*/
+        /*printl(cmd);*/
+        /*printf("\n");*/
+        /*printl(arg1);*/
+        /*printf("\n");*/
+
+        if (strcmp(cmd, "process") == 0)
         {
             ProcessManage();
         }
-        else if (strcmp(rdbuf, "filemng") == 0)
-        {
-            //printf("File Manager is already running on CONSOLE-1 ! \n");
-            //continue;
-            /*TestB();*/
-            FileManager(fd_stdin, fd_stdout);
-        }
-        else if (strcmp(rdbuf, "help") == 0)
+        else if (strcmp(cmd, "help") == 0)
         {
             help();
         }
-        else if (strcmp(rdbuf, "runttt") == 0)
+        else if (strcmp(cmd, "runttt") == 0)
         {
 
             TTT(fd_stdin, fd_stdout);
         }
-
-        else if (strcmp(rdbuf, "clear") == 0)
+        else if (strcmp(cmd, "clear") == 0)
         {
             printTitle();
+        }
+        else if (strcmp(cmd, "ls") == 0)
+        {
+            printl(rdbuf);
+            /*printTitle();*/
+        }
+        else if (strcmp(cmd, "touch") == 0)
+        {
+            printl(rdbuf);
+            /*printTitle();*/
+        }
+        else if (strcmp(cmd, "cat") == 0)
+        {
+            printl(rdbuf);
+            /*printTitle();*/
+        }
+        else if (strcmp(cmd, "gedit") == 0)
+        {
+            printl(rdbuf);
+            /*printTitle();*/
+        }
+        else if (strcmp(cmd, "rm") == 0)
+        {
+            printl(rdbuf);
+            /*printTitle();*/
         }
         else
             printf("Command not found, please check!\n");
