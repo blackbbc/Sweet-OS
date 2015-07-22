@@ -64,8 +64,6 @@ struct proc {
                     * queue (q_sending)
                     */
 
-    int nr_tty;
-
     struct file_desc * filp[NR_FILES];
 };
 
