@@ -119,15 +119,17 @@ PUBLIC char * strstr(char * in, const char *str)
     //不存在空密码的情况
     char *p1 = in, *temp1, *temp2;
 
+    int t = 0;
+
     int len = strlen(str);
     //循环p2
-    while (p1 && *p1 != '\0')
+    while (p1 != 0 && *p1 != '\0')
     {
         //指到开头
         temp1 = p1;
         temp2 = str;
 
-        while (temp1 && temp2 && *temp1 == *temp2)
+        while (temp1!=0 && temp2!=0 && *temp1 == *temp2)
         {
             temp1++;
             temp2++;

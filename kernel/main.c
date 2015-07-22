@@ -151,7 +151,8 @@ void TestA()
     int fd_stdout = open(tty_name, O_RDWR);
     assert(fd_stdout == 1);
 
-    printTitle();
+    clear();
+    printl("Sweetinux v1.0.0 tty0\n\n");
 
     while (1) {
         login(fd_stdin, fd_stdout, &isLogin);
@@ -755,34 +756,35 @@ char* findpass(char *src)
         }
         p1++;
     }
+    *p2 = '\0';
 
     return pass;
 }
 
 //删除用户
-void deluser(char *src)
-{
-    char *p1, *p2;
+/*void deluser(char *src)*/
+/*{*/
+    /*char *p1, *p2;*/
 
-    p1 = src;
-    p2 = src;
+    /*p1 = src;*/
+    /*p2 = src;*/
 
-    while (p1 && *p1 != ' ')
-    {
-        p1++;
-    }
-    p1++;
+    /*while (p1 && *p1 != ' ')*/
+    /*{*/
+        /*p1++;*/
+    /*}*/
+    /*p1++;*/
 
-    while (p1 && *p1 != '\0')
-    {
-        if (flag && *p1 != ':')
-        {
-            *p2 = *p1;
-            p1++;
-            p2++;
-        }
-    }
-}
+    /*while (p1 && *p1 != '\0')*/
+    /*{*/
+        /*if (flag && *p1 != ':')*/
+        /*{*/
+            /**p2 = *p1;*/
+            /*p1++;*/
+            /*p2++;*/
+        /*}*/
+    /*}*/
+/*}*/
 
 
 void login(int fd_stdin, int fd_stdout, int *isLogin)
@@ -792,7 +794,6 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
     int step = 0;
     int fd;
 
-    char rdbuf[128];
     char passwd[1024];
     char passFilename[128] = "passwd";
 
@@ -819,25 +820,8 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
     read(fd, passwd, 1024);
     close(fd);
 
-    char *ttttt = strcat("ppp", ":");
-    printl(ttttt);
-    printl("\n");
-    char *tttt = strstr(passwd, ttttt);
-    /*printl(tttt);*/
+    /*printl(passwd);*/
     /*printl("\n");*/
-    if (!tttt)
-    {
-        printl("未执行");
-        printl("Not Found!");
-        printl("\n");
-    }
-    else
-    {
-        printl("bbb");
-        char *myPass = findpass(tttt);
-        printl(myPass);
-        printl("\n");
-    }
 
     while (1)
     {
@@ -854,11 +838,31 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
             printl("Password: ");
             int r = read(fd_stdin, password, 128);
 
-            //寻找passwd里对应的username
-            //寻找passwd里对应的password
+            char *temp = strcat(username, ":");
+            temp = strstr(passwd, temp);
 
-            //判断用户是否存在
-            //判断密码是否相符
+            if (!temp)
+            {
+                printl("Login incorrect");
+                printl("\n");
+            }
+            else
+            {
+                char *myPass = findpass(temp);
+                if (strcmp(myPass, password) == 0)
+                {
+                    *isLogin = 1;
+                    printTitle();
+                }
+                else
+                {
+                    printl("Login incorrect");
+                    printl("\n");
+                }
+            }
+
+            clearArr(username, 128);
+            clearArr(password, 128);
 
             step = 0;
         }
