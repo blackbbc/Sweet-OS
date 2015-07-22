@@ -131,12 +131,14 @@ PUBLIC int get_ticks()
                                TestA
  *======================================================================*/
 
-//1号进程
+//A进程
 void TestA()
 {
-    //指定输出的tty
+    //0号终端
     char tty_name[] = "/dev_tty0";
     int fd;
+
+    int isLogin = 0;
 
     char rdbuf[128];
     char cmd[128];
@@ -152,6 +154,8 @@ void TestA()
     printTitle();
 
     while (1) {
+        login(fd_stdin, fd_stdout, &isLogin);
+
         //必须要清空数组
         clearArr(rdbuf, 128);
         clearArr(cmd, 128);
@@ -731,6 +735,60 @@ PUBLIC void panic(const char *fmt, ...)
  *                                Custom Command
  *****************************************************************************/
 
+void login(int fd_stdin, int fd_stdout, int *isLogin)
+{
+    char username[128];
+    char password[128];
+    int step = 0;
+    int fd;
+
+    char rdbuf[128];
+    char passwd[1024];
+    char passFilename[128] = "passwd";
+
+    /*初始化密码文件*/
+    fd = open(passFilename, O_CREAT | O_RDWR);
+    if (fd == -1)
+    {
+        //文件已存在，什么都不要做
+    }
+    else
+    {
+        //文件不存在，写一个空的进去
+        char temp[1024];
+        temp[0] = 0;
+        write(fd, temp, 1);
+        close(fd);
+        //给文件赋值
+        fd = open(passFilename, O_RDWR);
+        write(fd, "root:admin ", 1024);
+        close(fd);
+    }
+    //然后读密码文件
+    fd = open(passFilename, O_RDWR);
+    read(fd, passwd, 1024);
+    close(fd);
+
+    //先把密码文件读出来
+    while (1)
+    {
+        if (*isLogin)
+            return;
+        if (step == 0)
+        {
+            printl("login: ");
+            int r = read(fd_stdin, rdbuf, 128);
+            step = 1;
+        }
+        else if (step == 1)
+        {
+            printl("Password: ");
+            int r = read(fd_stdin, rdbuf, 128);
+            step = 0;
+        }
+    }
+}
+
 void clearArr(char *arr, int length)
 {
     int i;
@@ -764,11 +822,11 @@ void help()
     printf("2. filemng       : Run the file manager\n");
     printf("3. clear         : Clear the screen\n");
     printf("4. help          : Show this help message\n");
-//  printf("5. taskmanager   : Run a task manager,you can add or kill a process here\n");
     printf("5. runttt        : Run a small game on this OS\n");
     printf("==============================================================================\n");
 }
 
+//谢志杰进行修改
 void ProcessManage()
 {
     int i;
@@ -783,128 +841,3 @@ void ProcessManage()
     }
     printf("=============================================================================\n");
 }
-
-void FileManager(int fd_stdin, int fd_stdout)
-{
-    char rdbuf[128];
-    char cmd[8];
-    char filename[120];
-    char buf[1024];
-    int m,n;
-    printf("                        ==================================\n");
-    printf("                                    File Manager           \n");
-    printf("                                 Kernel on Orange's \n\n");
-    printf("                        ==================================\n");
-    while (1) {
-        printf("$ ");
-        int r = read(fd_stdin, rdbuf, 70);
-        rdbuf[r] = 0;
-
-
-
-        if (strcmp(rdbuf, "help") == 0)
-        {
-            printf("=============================================================================\n");
-            printf("Command List     :\n");
-            printf("1. create [filename]       : Create a new file \n");
-            printf("2. read [filename]         : Read the file\n");
-            printf("3. write [filename]        : Write at the end of the file\n");
-            printf("4. delete [filename]       : Delete the file\n");
-            printf("5. help                    : Display the help message\n");
-            printf("==============================================================================\n");
-        }
-        else if (strcmp(rdbuf, "help") == 0)
-        {
-
-        }
-        else
-        {
-            int fd;
-            int i = 0;
-            int j = 0;
-            char temp = -1;
-            while(rdbuf[i]!=' ')
-            {
-                cmd[i] = rdbuf[i];
-                i++;
-            }
-            cmd[i++] = 0;
-            while(rdbuf[i] != 0)
-            {
-                filename[j] = rdbuf[i];
-                i++;
-                j++;
-            }
-            filename[j] = 0;
-
-            if (strcmp(cmd, "create") == 0)
-            {
-                fd = open(filename, O_CREAT | O_RDWR);
-                if (fd == -1)
-                {
-                    printf("Failed to create file! Please check the fileaname!\n");
-                    continue ;
-                }
-                buf[0] = 0;
-                write(fd, buf, 1);
-                printf("File created: %s (fd %d)\n", filename, fd);
-                close(fd);
-            }
-            else if (strcmp(cmd, "read") == 0)
-            {
-                fd = open(filename, O_RDWR);
-                if (fd == -1)
-                {
-                    printf("Failed to open file! Please check the fileaname!\n");
-                    continue ;
-                }
-
-                n = read(fd, buf, 1024);
-
-                printf("%s\n", buf);
-                close(fd);
-
-            }
-            else if (strcmp(cmd, "write") == 0)
-            {
-                fd = open(filename, O_RDWR);
-                if (fd == -1)
-                {
-                    printf("Failed to open file! Please check the fileaname!\n");
-                    continue ;
-                }
-
-                m = read(fd_stdin, rdbuf,80);
-                rdbuf[m] = 0;
-
-                n = write(fd, rdbuf, m+1);
-                close(fd);
-            }
-            else if (strcmp(cmd, "delete") == 0)
-            {
-                m=unlink(filename);
-                if (m == 0)
-                {
-                    printf("File deleted!\n");
-                    continue;
-                }
-                else
-                {
-                    printf("Failed to delete file! Please check the fileaname!\n");
-                    continue;
-                }
-
-            }
-            else
-            {
-                printf("Command not found, Please check!\n");
-                continue;
-            }
-
-        }
-
-    }
-
-    assert(0); /* never arrive here */
-}
-
