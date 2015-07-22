@@ -204,10 +204,11 @@ void TestA()
         {
             help();
         }
-        else if (strcmp(cmd, "runttt") == 0)
+        else if (strcmp(cmd, "game") == 0)
         {
-            printf("%s\n", rdbuf);
+            /*printf("%s\n", rdbuf);*/
             /*TTT(fd_stdin, fd_stdout);*/
+            game();
         }
         else if (strcmp(cmd, "clear") == 0)
         {
@@ -1064,4 +1065,42 @@ void ProcessManage()
         printf("        %d           %s            %d                yes\n", proc_table[i].pid, proc_table[i].name, proc_table[i].priority);
     }
     printf("=============================================================================\n");
+}
+
+unsigned int _seed2 = 0xDEADBEEF;
+
+void srand(unsigned int seed){
+    _seed2 = seed;
+}
+
+int rand() {
+    unsigned int next = _seed2;
+    unsigned int result;
+
+    next *= 1103515245;
+    next += 12345;
+    result = ( unsigned int  ) ( next / 65536 ) % 2048;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= ( unsigned int ) ( next / 65536 ) % 1024;
+
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= ( unsigned int ) ( next / 65536 ) % 1024;
+
+    _seed2 = next;
+
+    return result;
+}
+
+void game()
+{
+    int i;
+   for( i = 0 ; i < 5 ; i++ )
+   {
+        printf("%d\n", rand() % 50);
+   }
 }
