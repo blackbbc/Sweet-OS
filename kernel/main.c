@@ -734,6 +734,56 @@ PUBLIC void panic(const char *fmt, ...)
 /*****************************************************************************
  *                                Custom Command
  *****************************************************************************/
+char* findpass(char *src)
+{
+    char pass[128];
+    int flag = 0;
+    char *p1, *p2;
+
+    p1 = src;
+    p2 = pass;
+
+    while (p1 && *p1 != ' ')
+    {
+        if (*p1 == ':')
+            flag = 1;
+
+        if (flag && *p1 != ':')
+        {
+            *p2 = *p1;
+            p2++;
+        }
+        p1++;
+    }
+
+    return pass;
+}
+
+//删除用户
+void deluser(char *src)
+{
+    char *p1, *p2;
+
+    p1 = src;
+    p2 = src;
+
+    while (p1 && *p1 != ' ')
+    {
+        p1++;
+    }
+    p1++;
+
+    while (p1 && *p1 != '\0')
+    {
+        if (flag && *p1 != ':')
+        {
+            *p2 = *p1;
+            p1++;
+            p2++;
+        }
+    }
+}
+
 
 void login(int fd_stdin, int fd_stdout, int *isLogin)
 {
@@ -769,7 +819,26 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
     read(fd, passwd, 1024);
     close(fd);
 
-    //先把密码文件读出来
+    char *ttttt = strcat("ppp", ":");
+    printl(ttttt);
+    printl("\n");
+    char *tttt = strstr(passwd, ttttt);
+    /*printl(tttt);*/
+    /*printl("\n");*/
+    if (!tttt)
+    {
+        printl("未执行");
+        printl("Not Found!");
+        printl("\n");
+    }
+    else
+    {
+        printl("bbb");
+        char *myPass = findpass(tttt);
+        printl(myPass);
+        printl("\n");
+    }
+
     while (1)
     {
         if (*isLogin)
@@ -777,17 +846,25 @@ void login(int fd_stdin, int fd_stdout, int *isLogin)
         if (step == 0)
         {
             printl("login: ");
-            int r = read(fd_stdin, rdbuf, 128);
+            int r = read(fd_stdin, username, 128);
             step = 1;
         }
         else if (step == 1)
         {
             printl("Password: ");
-            int r = read(fd_stdin, rdbuf, 128);
+            int r = read(fd_stdin, password, 128);
+
+            //寻找passwd里对应的username
+            //寻找passwd里对应的password
+
+            //判断用户是否存在
+            //判断密码是否相符
+
             step = 0;
         }
     }
 }
+
 
 void clearArr(char *arr, int length)
 {
