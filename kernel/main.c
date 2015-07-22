@@ -345,6 +345,15 @@ void TestA()
         {
             doPassWd(username, password, fd_stdin);
         }
+        else if (strcmp(cmd, "logout") == 0)
+        {
+            isLogin = 0;
+            clearArr(username, 128);
+            clearArr(password, 128);
+
+            clear();
+            printl("Sweetinux v1.0.0 tty0\n\n");
+        }
         else
             printf("Command not found, please check!\n");
     }
