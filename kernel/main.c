@@ -338,7 +338,7 @@ void TestA()
         }
         else if (strcmp(cmd, "userdel") == 0)
         {
-            printl("useradd\n");
+            doUserDel(arg1);
         }
         else if (strcmp(cmd, "passwd") == 0)
         {
@@ -780,23 +780,21 @@ void doUserDel(char *username)
     read(fd, passwd, 1024);
     close(fd);
 
+    //定位到那个位置
     char *temp = strcat(username, ":");
     temp = strstr(passwd, temp);
 
     if (!temp)
     {
         //用户不存在，不用删除
-        /*printl("Login incorrect");*/
-        /*printl("\n");*/
+        printl("User not exists");
+        printl("\n");
     }
     else
     {
-        //定位到那个位置
-        char *myPass = findpass(temp);
-
         //处理这一堆鬼
-        p1 = myPass;
-        p2 = myPass;
+        p1 = temp;
+        p2 = temp;
 
         while (p1 && *p1 != ' ')
         {
@@ -811,9 +809,21 @@ void doUserDel(char *username)
             p2++;
         }
 
-        //做尾处理
-        p2 = 0;
+        /*做尾处理*/
+        while (p2 != p1)
+        {
+            *p2 = '\0';
+            p2++;
+        }
+        *p2 = '\0';
+
+        fd = open(passFilename, O_RDWR);
+        write(fd, passwd, 1024);
+        close(fd);
     }
+
+    /*printl(passwd);*/
+    /*printl("\n");*/
 }
 
 void doUserAdd(char *username, char *password)
@@ -834,7 +844,8 @@ void doUserAdd(char *username, char *password)
 
     strcat(passwd, newUser);
 
-    printl(passwd);
+    /*printl(passwd);*/
+    /*printl("\n");*/
 
     fd = open(passFilename, O_RDWR);
     write(fd, passwd, 1024);
