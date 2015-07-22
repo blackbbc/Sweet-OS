@@ -354,6 +354,24 @@ void TestA()
             clear();
             printl("Sweetinux v1.0.0 tty0\n\n");
         }
+        else if (strcmp(cmd, "shutdown") == 0)
+        {
+          asm volatile ("cli");
+          for (;;)
+            {
+              // (phony) ACPI shutdown (http://forum.osdev.org/viewtopic.php?t=16990)
+              // Works for qemu and bochs.
+              outw (0xB004, 0x2000);
+
+              // Magic shutdown code for bochs and qemu.
+              for (const char *s = "Shutdown"; *s; ++s)
+                outb (0x8900, *s);
+
+              // Magic code for VMWare. Also a hard lock.
+              asm volatile ("cli; hlt");
+            }
+            /*break;*/
+        }
         else
             printf("Command not found, please check!\n");
     }
