@@ -141,6 +141,7 @@ void TestA()
     char rdbuf[128];
     char cmd[128];
     char arg1[128];
+    char arg2[128];
     char buf[1024];
 
     int fd_stdin  = open(tty_name, O_RDWR);
@@ -155,6 +156,7 @@ void TestA()
         clearArr(rdbuf, 128);
         clearArr(cmd, 128);
         clearArr(arg1, 128);
+        clearArr(arg2, 128);
         clearArr(buf, 1024);
 
         printl("root@sweet:~$ ");
@@ -169,15 +171,21 @@ void TestA()
             cmd[i] = rdbuf[i];
             i++;
         }
-        //先使用，再加
-        cmd[i++] = 0;
+        i++;
         while(rdbuf[i] != ' ' && rdbuf[i] != 0)
         {
             arg1[j] = rdbuf[i];
             i++;
             j++;
         }
-        arg1[j] = 0;
+        i++;
+        j = 0;
+        while(rdbuf[i] != ' ' && rdbuf[i] != 0)
+        {
+            arg2[j] = rdbuf[i];
+            i++;
+            j++;
+        }
         //清空缓冲区
         rdbuf[r] = 0;
 
@@ -214,7 +222,7 @@ void TestA()
             fd = open(arg1, O_CREAT | O_RDWR);
             if (fd == -1)
             {
-                printf("Failed to create file! Please check the fileaname!\n");
+                printf("Failed to create file! Please check the filename!\n");
                 continue ;
             }
             buf[0] = 0;
@@ -227,13 +235,11 @@ void TestA()
             fd = open(arg1, O_RDWR);
             if (fd == -1)
             {
-                printf("Failed to open file! Please check the fileaname!\n");
+                printf("Failed to open file! Please check the filename!\n");
                 continue ;
             }
-
             read(fd, buf, 1024);
             close(fd);
-
             printf("%s\n", buf);
         }
         else if (strcmp(cmd, "vi") == 0)
@@ -241,10 +247,9 @@ void TestA()
             fd = open(arg1, O_RDWR);
             if (fd == -1)
             {
-                printf("Failed to open file! Please check the fileaname!\n");
+                printf("Failed to open file! Please check the filename!\n");
                 continue ;
             }
-
             int tail = read(fd_stdin, rdbuf, 128);
             rdbuf[tail] = 0;
 
@@ -262,9 +267,71 @@ void TestA()
             }
             else
             {
-                printf("Failed to delete file! Please check the fileaname!\n");
+                printf("Failed to delete file! Please check the filename!\n");
                 continue;
             }
+        }
+        else if (strcmp(cmd, "cp") == 0)
+        {
+            //首先获得文件内容
+            fd = open(arg1, O_RDWR);
+            if (fd == -1)
+            {
+                printf("File not exists! Please check the filename!\n");
+                continue ;
+            }
+            int tail = read(fd, buf, 1024);
+            close(fd);
+            /*然后创建文件*/
+            fd = open(arg2, O_CREAT | O_RDWR);
+            if (fd == -1)
+            {
+                //文件已存在，什么都不要做
+            }
+            else
+            {
+                //文件不存在，写一个空的进去
+                char temp[1024];
+                temp[0] = 0;
+                write(fd, temp, 1);
+                close(fd);
+            }
+            //给文件赋值
+            fd = open(arg2, O_RDWR);
+            write(fd, buf, tail+1);
+            close(fd);
+        }
+        else if (strcmp(cmd, "mv") == 0)
+        {
+            //首先获得文件内容
+            fd = open(arg1, O_RDWR);
+            if (fd == -1)
+            {
+                printf("File not exists! Please check the filename!\n");
+                continue ;
+            }
+            int tail = read(fd, buf, 1024);
+            close(fd);
+            /*然后创建文件*/
+            fd = open(arg2, O_CREAT | O_RDWR);
+            if (fd == -1)
+            {
+                //文件已存在，什么都不要做
+            }
+            else
+            {
+                //文件不存在，写一个空的进去
+                char temp[1024];
+                temp[0] = 0;
+                write(fd, temp, 1);
+                close(fd);
+            }
+            //给文件赋值
+            fd = open(arg2, O_RDWR);
+            write(fd, buf, tail+1);
+            close(fd);
+            //最后删除文件
+            unlink(arg1);
         }
         else
             printf("Command not found, please check!\n");
