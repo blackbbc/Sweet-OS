@@ -110,9 +110,9 @@ struct inode {
 struct dir_entry {
     int   inode_nr;       /**< inode nr. */
     char  name[MAX_FILENAME_LEN]; /**< Filename */
-    //int   created_time;
-    //int   changed_time;
-    //char  pass[16];
+    int   created_time;
+    int   changed_time;
+    char  pass[16];
 };
 
 /**
@@ -144,6 +144,7 @@ struct file_desc {
                        SECTOR_SIZE, /* read one sector */ \
                        TASK_FS,             \
                        fsbuf);
+
 #define WR_SECT(dev,sect_nr) rw_sector(DEV_WRITE, \
                        dev,             \
                        (sect_nr) * SECTOR_SIZE,     \

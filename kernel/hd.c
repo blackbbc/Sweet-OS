@@ -349,26 +349,30 @@ PRIVATE void partition(int device, int style)
 PRIVATE void print_hdinfo(struct hd_info * hdi)
 {
     int i;
-    for (i = 0; i < NR_PART_PER_DRIVE + 1; i++) {
-        printl("%sPART_%d: base %d(0x%x), size %d(0x%x) (in sector)\n",
-               i == 0 ? " " : "     ",
-               i,
-               hdi->primary[i].base,
-               hdi->primary[i].base,
-               hdi->primary[i].size,
-               hdi->primary[i].size);
-    }
-    for (i = 0; i < NR_SUB_PER_DRIVE; i++) {
-        if (hdi->logical[i].size == 0)
-            continue;
-        printl("         "
-               "%d: base %d(0x%x), size %d(0x%x) (in sector)\n",
-               i,
-               hdi->logical[i].base,
-               hdi->logical[i].base,
-               hdi->logical[i].size,
-               hdi->logical[i].size);
-    }
+
+    //输出主分区
+    /*for (i = 0; i < NR_PART_PER_DRIVE + 1; i++) {*/
+        /*printl("%sPART_%d: base %d(0x%x), size %d(0x%x) (in sector)\n",*/
+               /*i == 0 ? " " : "     ",*/
+               /*i,*/
+               /*hdi->primary[i].base,*/
+               /*hdi->primary[i].base,*/
+               /*hdi->primary[i].size,*/
+               /*hdi->primary[i].size);*/
+    /*}*/
+
+    //输出逻辑分区
+    /*for (i = 0; i < NR_SUB_PER_DRIVE; i++) {*/
+        /*if (hdi->logical[i].size == 0)*/
+            /*continue;*/
+        /*printl("         "*/
+               /*"%d: base %d(0x%x), size %d(0x%x) (in sector)\n",*/
+               /*i,*/
+               /*hdi->logical[i].base,*/
+               /*hdi->logical[i].base,*/
+               /*hdi->logical[i].size,*/
+               /*hdi->logical[i].size);*/
+    /*}*/
 }
 
 /*****************************************************************************

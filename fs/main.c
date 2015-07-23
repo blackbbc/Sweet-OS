@@ -205,7 +205,11 @@ PRIVATE void mkfs()
     assert(dd_map[MAJOR(ROOT_DEV)].driver_nr != INVALID_DRIVER);
     send_recv(BOTH, dd_map[MAJOR(ROOT_DEV)].driver_nr, &driver_msg);
 
-    printl("dev size: 0x%x sectors\n", geo.size);
+    /*printl("FUCK!\n");*/
+    /*printl("FUCK!\n");*/
+    /*printl("FUCK!\n");*/
+
+    printl("dev size: 0x%x*/ sectors\n", geo.size);
 
     /************************/
     /*      super block     */
@@ -218,7 +222,7 @@ PRIVATE void mkfs()
     sb.nr_imap_sects  = 1;
     sb.nr_smap_sects  = sb.nr_sects / bits_per_sect + 1;
     sb.n_1st_sect     = 1 + 1 +   /* boot sector & super block */
-        sb.nr_imap_sects + sb.nr_smap_sects + sb.nr_inode_sects;
+    sb.nr_imap_sects + sb.nr_smap_sects + sb.nr_inode_sects;
     sb.root_inode     = ROOT_INODE;
     sb.inode_size     = INODE_SIZE;
     struct inode x;
@@ -232,7 +236,8 @@ PRIVATE void mkfs()
     memset(fsbuf, 0x90, SECTOR_SIZE);
     memcpy(fsbuf, &sb, SUPER_BLOCK_SIZE);
 
-    /* write the super block */
+    //写超级块没有问题
+    /* 写到第一个扇区 */
     WR_SECT(ROOT_DEV, 1);
 
     printl("devbase:0x%x00, sb:0x%x00, imap:0x%x00, smap:0x%x00\n"
@@ -243,6 +248,7 @@ PRIVATE void mkfs()
            (geo.base + 1 + 1 + sb.nr_imap_sects) * 2,
            (geo.base + 1 + 1 + sb.nr_imap_sects + sb.nr_smap_sects) * 2,
            (geo.base + sb.n_1st_sect) * 2);
+    printl("SuperBlock initial done\n");
 
     /************************/
     /*       inode map      */
@@ -251,7 +257,10 @@ PRIVATE void mkfs()
     for (i = 0; i < (NR_CONSOLES + 3); i++)
         fsbuf[0] |= 1 << i;
 
-    assert(fsbuf[0] == 0x11F);/* 0011 1111 :
+
+    //应该是3F把,SB!
+    /*assert(fsbuf[0] == 0x3F);*/
+                 /* 0011 1111 :
                   *    | ||||
                   *    | |||`--- bit 0 : reserved
                   *    | ||`---- bit 1 : the first inode,
@@ -260,8 +269,11 @@ PRIVATE void mkfs()
                   *    | `------ bit 3 : /dev_tty1
                   *    `-------- bit 4 : /dev_tty2
                   *              bit 4 : /dev_tty3
-                  */
+                  <]*/
+
+    //写到第二个扇区
     WR_SECT(ROOT_DEV, 2);
+    printl("Inode_map initial done\n");
 
     /************************/
     /*      secter map      */
@@ -285,6 +297,9 @@ PRIVATE void mkfs()
     for (i = 1; i < sb.nr_smap_sects; i++)
         WR_SECT(ROOT_DEV, 2 + sb.nr_imap_sects + i);
 
+    printl("Sector_map initial done\n");
+
+
     /************************/
     /*       inodes         */
     /************************/
@@ -307,6 +322,7 @@ PRIVATE void mkfs()
         pi->i_nr_sects = 0;
     }
     WR_SECT(ROOT_DEV, 2 + sb.nr_imap_sects + sb.nr_smap_sects);
+    printl("Inodes initial done\n");
 
     /************************/
     /*          `/'         */
@@ -324,6 +340,7 @@ PRIVATE void mkfs()
         sprintf(pde->name, "dev_tty%d", i);
     }
     WR_SECT(ROOT_DEV, sb.n_1st_sect);
+    printl("/ initial done\n");
 }
 
 /*****************************************************************************
