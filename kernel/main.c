@@ -239,6 +239,11 @@ void TestA()
                 printf("Failed to open file! Please check the filename!\n");
                 continue ;
             }
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
+            }
             read(fd, buf, 1024);
             close(fd);
             printf("%s\n", buf);
@@ -696,6 +701,23 @@ void doTest(char *path)
     printl("\n");
     printl(pde->pass);
     printl("\n");
+}
+
+int verifyFilePass(char *path, int fd_stdin)
+{
+    char pass[128];
+
+    struct dir_entry *pde = find_entry(path);
+    if (strcmp(pde->pass, "") == 0)
+        return 1;
+
+    printl("Please input the file pass: ");
+    read(fd_stdin, pass, 128);
+
+    if (strcmp(pde->pass, pass) == 0)
+        return 1;
+
+    return 0;
 }
 
 void doEncrypt(char *path)
