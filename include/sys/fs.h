@@ -108,8 +108,11 @@ struct inode {
  * @brief  Directory Entry
  */
 struct dir_entry {
-    int inode_nr;       /**< inode nr. */
-    char    name[MAX_FILENAME_LEN]; /**< Filename */
+    int   inode_nr;       /**< inode nr. */
+    char  name[MAX_FILENAME_LEN]; /**< Filename */
+    //int   created_time;
+    //int   changed_time;
+    //char  pass[16];
 };
 
 /**

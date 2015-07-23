@@ -449,10 +449,13 @@ PRIVATE void new_dir_entry(struct inode *dir_inode,int inode_nr,char *filename)
             new_de)              /* free slot is found */
             break;
     }
+
     if (!new_de) { /* reached the end of the dir */
         new_de = pde;
         dir_inode->i_size += DIR_ENTRY_SIZE;
     }
+
+    //创建dir_entry
     new_de->inode_nr = inode_nr;
     strcpy(new_de->name, filename);
 
