@@ -45,7 +45,7 @@
 #define RECEIVING 0x04	/* set when proc trying to recv */
 
 /* TTY */
-#define NR_CONSOLES	4	/* consoles */
+#define NR_CONSOLES	3	/* consoles */
 
 /* 8259A interrupt controller ports. */
 #define	INT_M_CTL	0x20	/* I/O port for interrupt controller         <Master> */

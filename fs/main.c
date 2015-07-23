@@ -258,9 +258,8 @@ PRIVATE void mkfs()
         fsbuf[0] |= 1 << i;
 
 
-    //应该是3F把,SB!
-    /*assert(fsbuf[0] == 0x3F);*/
-                 /* 0011 1111 :
+    /*assert(fsbuf[0] == 0x1F);*/
+                 /* 0001 1111 :
                   *    | ||||
                   *    | |||`--- bit 0 : reserved
                   *    | ||`---- bit 1 : the first inode,
@@ -268,7 +267,6 @@ PRIVATE void mkfs()
                   *    | |`----- bit 2 : /dev_tty0
                   *    | `------ bit 3 : /dev_tty1
                   *    `-------- bit 4 : /dev_tty2
-                  *              bit 4 : /dev_tty3
                   <]*/
 
     //写到第二个扇区
