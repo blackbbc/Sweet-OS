@@ -164,7 +164,7 @@ void TestA()
         clearArr(cmd, 128);
         clearArr(arg1, 128);
         clearArr(arg2, 128);
-        /*clearArr(buf, 1024);*/
+        clearArr(buf, 1024);
 
         printf("%s@sweet:~$ ", username);
 
