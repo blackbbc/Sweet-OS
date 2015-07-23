@@ -716,6 +716,7 @@ void printTitle()
 {
     clear();
 
+    disp_pos = 0;
     disp_color_str("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n", 0x9);
     disp_color_str("       mmmm                         m      \"                             \n", 0x9);
     disp_color_str("      #\"   \"m     m  mmm    mmm   mm#mm  mmm    m mm   m   m  m   m      \n", 0x9);
@@ -838,11 +839,23 @@ void help()
 {
     printf("=============================================================================\n");
     printf("Command List     :\n");
-    printf("1. process       : A process manage,show you all process-info here\n");
-    printf("2. filemng       : Run the file manager\n");
-    printf("3. clear         : Clear the screen\n");
-    printf("4. help          : Show this help message\n");
-    printf("5. runttt        : Run a small game on this OS\n");
+    printf("1.  help                          : Show this help message\n");
+    printf("2.  clear                         : Clear the screen\n");
+    printf("3.  process                       : A process manage,show you all process-info\n");
+    printf("4.  ls                            : List all files\n");
+    printf("5.  sl                            : Display animations to correct users\n");
+    printf("6.  touch       [file]            : Create a new file\n");
+    printf("7.  cat         [file]            : Print the file\n");
+    printf("8.  vi          [file]            : Modify the content of the file\n");
+    printf("9.  rm          [file]            : Delete a file\n");
+    printf("10. cp          [SOURCE] [DEST]   : Copy a file\n");
+    printf("11. mv          [SOURCE] [DEST]   : Move a file\n");
+    printf("12. useradd     [USERNAME] [PASSWORD]   : Add a new user\n");
+    printf("13. userdel     [USERNAME]        : Delete a user\n");
+    printf("14. passwd      [USERNAME]        : Change your user password\n");
+    printf("15. logout                        : Logout\n");
+    printf("16. encrypt     [file]            : Encrypt a file\n");
+    printf("17. game                          : 2048 Game\n");
     printf("==============================================================================\n");
 }
 
