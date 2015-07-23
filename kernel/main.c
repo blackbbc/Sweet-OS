@@ -912,7 +912,7 @@ int mat_up(int *mat){
         memset(temp,0,sizeof(int)*4);
         for(j=0,k=0,last=0;j<4;j++){
             if(mat[j*4+i]!=0){
-                temp[k]=mat[i*4+j];
+                temp[k]=mat[j*4+i];
                 mat[j*4+i]=0;
                 last=j+1;
                 k++;
