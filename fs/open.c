@@ -217,7 +217,8 @@ PUBLIC int do_ls()
 
         for (j = 0; j < SECTOR_SIZE / DIR_ENTRY_SIZE; j++, pde++)
         {
-            printl("  %2d        %s\n", pde->inode_nr , pde->name );
+            /*struct inode *n = find_inode(pde->inode_nr);*/
+            printl("  %2d        %s\n", pde->inode_nr , pde->name);
             if (++m >= nr_dir_entries){
                 printl("\n");
                 break;

@@ -355,6 +355,10 @@ void TestA()
             clear();
             printl("Sweetinux v1.0.0 tty0\n\n");
         }
+        else if (strcmp(cmd, "time") == 0)
+        {
+            /*break;*/
+        }
         else if (strcmp(cmd, "shutdown") == 0)
         {
             /*break;*/

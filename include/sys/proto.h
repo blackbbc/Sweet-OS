@@ -71,6 +71,7 @@ PUBLIC void			task_fs();
 PUBLIC int			rw_sector(int io_type, int dev, u64 pos,
 					  int bytes, int proc_nr, void * buf);
 PUBLIC struct inode *		get_inode(int dev, int num);
+PUBLIC struct inode *           find_inode(int num);
 PUBLIC void			put_inode(struct inode * pinode);
 PUBLIC void			sync_inode(struct inode * p);
 PUBLIC struct super_block *	get_super_block(int dev);
