@@ -362,7 +362,18 @@ void TestA()
         }
         else if (strcmp(cmd, "encrypt") == 0)
         {
-            doEncrypt(arg1);
+            fd = open(arg1, O_RDWR);
+            if (fd == -1)
+            {
+                printf("File not exists! Please check the filename!\n");
+                continue ;
+            }
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
+            }
+            doEncrypt(arg1, fd_stdin);
         }
         else if (strcmp(cmd, "test") == 0)
         {
@@ -708,10 +719,13 @@ int verifyFilePass(char *path, int fd_stdin)
     char pass[128];
 
     struct dir_entry *pde = find_entry(path);
+
+    printl(pde->pass);
+
     if (strcmp(pde->pass, "") == 0)
         return 1;
 
-    printl("Please input the file pass: ");
+    printl("Please input the file password: ");
     read(fd_stdin, pass, 128);
 
     if (strcmp(pde->pass, pass) == 0)
@@ -720,11 +734,18 @@ int verifyFilePass(char *path, int fd_stdin)
     return 0;
 }
 
-void doEncrypt(char *path)
+void doEncrypt(char *path, int fd_stdin)
 {
+    //查找文件
     /*struct dir_entry *pde = find_entry(path);*/
 
+    char pass[128];
 
+    printl("Please input the new file password: ");
+    read(fd_stdin, pass, 128);
+
+    if (strcmp(pass, "") == 0)
+        strstr(pass, "");
     //以下内容用于加密
     int i, j;
 
@@ -759,7 +780,7 @@ void doEncrypt(char *path)
             if (memcmp(filename, pde->name, MAX_FILENAME_LEN) == 0)
             {
                 //刷新文件
-                strcpy(pde->pass, "123");
+                strcpy(pde->pass, pass);
                 WR_SECT(dir_inode->i_dev, dir_blk0_nr + i);
                 return;
                 /*return pde->inode_nr;*/
