@@ -1,9 +1,9 @@
 /*************************************************************************//**
  *****************************************************************************
- * @file   systask.c
- * @brief
- * @author Forrest Y. Yu
- * @date   2007
+ * @file   ls.c
+ * @brief  ls
+ * @author Sweet
+ * @date   2015
  *****************************************************************************
  *****************************************************************************/
 
@@ -17,41 +17,21 @@
 #include "tty.h"
 #include "console.h"
 #include "global.h"
-#include "keyboard.h"
 #include "proto.h"
 
-
 /*****************************************************************************
- *                                task_sys
+ *                                ls
  *****************************************************************************/
 /**
- * <Ring 1> The main loop of TASK SYS.
+ * Write to a file descriptor.
  *
  *****************************************************************************/
-PUBLIC void task_sys()
+PUBLIC int ls()
 {
     MESSAGE msg;
-    while (1) {
-        send_recv(RECEIVE, ANY, &msg);
-        int src = msg.source;
+    msg.type = LS;
 
-        switch (msg.type) {
-        case GET_TICKS:
-            msg.RETVAL = ticks;
-            send_recv(SEND, src, &msg);
-            break;
-        case GET_PID:
-            msg.type = SYSCALL_RET;
-            msg.PID = src;
-            send_recv(SEND, src, &msg);
-            break;
-        case LS:
-            do_ls();
-            send_recv(SEND, src, &msg);
-            break;
-        default:
-            panic("unknown msg type");
-            break;
-        }
-    }
+    send_recv(BOTH, TASK_SYS, &msg);
+
+    return msg.RETVAL;
 }
