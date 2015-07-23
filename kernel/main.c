@@ -164,11 +164,14 @@ void TestA()
         clearArr(cmd, 128);
         clearArr(arg1, 128);
         clearArr(arg2, 128);
-        clearArr(buf, 1024);
+        /*clearArr(buf, 1024);*/
 
         printf("%s@sweet:~$ ", username);
 
         int r = read(fd_stdin, rdbuf, 128);
+
+        if (strcmp(rdbuf, "") == 0)
+            continue;
 
         //解析命令
         int i = 0;
@@ -708,12 +711,24 @@ void clearArr(char *arr, int length)
 
 void printTitle()
 {
-        clear();
-        printf("                        ==================================\n");
-        printf("                                   Sweetinux v1.0.0             \n");
-        printf("                                 Kernel on Orange's \n\n");
-        printf("                                     Welcome !\n");
-        printf("                        ==================================\n");
+    clear();
+
+    disp_color_str("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n", 0x9);
+    disp_color_str("       mmmm                         m      \"                             \n", 0x9);
+    disp_color_str("      #\"   \"m     m  mmm    mmm   mm#mm  mmm    m mm   m   m  m   m      \n", 0x9);
+    disp_color_str("      \"#mmm \"m m m\" #\"  #  #\"  #    #      #    #\"  #  #   #   #m#       \n", 0x9);
+    disp_color_str("          \"# #m#m#  #\"\"\"\"  #\"\"\"\"    #      #    #   #  #   #   m#m       \n", 0x9);
+    disp_color_str("      \"mmm#\"  # #   \"#mm\"  \"#mm\"    \"mm  mm#mm  #   #  \"mm\"#  m\" \"m      \n", 0x9);
+    disp_color_str("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n", 0x9);
+    printl("\n\n\n\n\n\n\n");
+
+    /*disp_color_str("dddddddddddddddd\n", 0x9);*/
+
+    /*printf("                        ==================================\n");*/
+    /*printf("                                   Sweetinux v1.0.0             \n");*/
+    /*printf("                                 Kernel on Orange's \n\n");*/
+    /*printf("                                     Welcome !\n");*/
+    /*printf("                        ==================================\n");*/
 }
 
 void clear()
