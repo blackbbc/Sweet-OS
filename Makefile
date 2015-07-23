@@ -30,7 +30,7 @@ OBJS		= kernel/kernel.o lib/syscall.o kernel/start.o kernel/main.o\
 			kernel/i8259.o kernel/global.o kernel/protect.o kernel/proc.o\
 			kernel/systask.o kernel/hd.o\
 			lib/printf.o lib/vsprintf.o\
-			lib/kliba.o lib/klib.o lib/string.o lib/ls.o lib/misc.o\
+			lib/kliba.o lib/klib.o lib/string.o lib/ls.o lib/sl.o lib/misc.o\
 			lib/open.o lib/read.o lib/write.o lib/close.o lib/unlink.o\
 			lib/getpid.o lib/syslog.o\
 			fs/main.o fs/open.o fs/misc.o fs/read_write.o\
@@ -129,6 +129,9 @@ lib/klib.o: lib/klib.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/ls.o: lib/ls.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/sl.o: lib/sl.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/misc.o: lib/misc.c

@@ -58,6 +58,9 @@ PUBLIC	int	unlink		(const char *pathname);
 /* lib/getpid.c */
 PUBLIC int	getpid		();
 
+/* lib/sl.c     */
+PUBLIC void     sl              ();
+
 /* lib/syslog.c */
 PUBLIC	int	syslog		(const char *fmt, ...);
 

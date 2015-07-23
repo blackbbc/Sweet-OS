@@ -219,7 +219,10 @@ void TestA()
         else if (strcmp(cmd, "ls") == 0)
         {
             ls();
-            /*printf("%s\n", rdbuf);*/
+        }
+        else if (strcmp(cmd, "sl") == 0)
+        {
+            sl();
         }
         else if (strcmp(cmd, "touch") == 0)
         {
