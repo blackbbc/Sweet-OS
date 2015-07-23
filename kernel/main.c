@@ -255,6 +255,11 @@ void TestA()
                 printf("Failed to open file! Please check the filename!\n");
                 continue ;
             }
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
+            }
             int tail = read(fd_stdin, rdbuf, 128);
             rdbuf[tail] = 0;
 
@@ -263,6 +268,11 @@ void TestA()
         }
         else if (strcmp(cmd, "rm") == 0)
         {
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
+            }
             int result;
             result = unlink(arg1);
             if (result == 0)
@@ -284,6 +294,11 @@ void TestA()
             {
                 printf("File not exists! Please check the filename!\n");
                 continue ;
+            }
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
             }
             int tail = read(fd, buf, 1024);
             close(fd);
@@ -314,6 +329,11 @@ void TestA()
             {
                 printf("File not exists! Please check the filename!\n");
                 continue ;
+            }
+            if (!verifyFilePass(arg1, fd_stdin))
+            {
+                printf("Authorization failed\n");
+                continue;
             }
             int tail = read(fd, buf, 1024);
             close(fd);
