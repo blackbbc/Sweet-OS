@@ -226,7 +226,6 @@ void TestA()
                 printf("Failed to create file! Please check the filename!\n");
                 continue ;
             }
-            buf[0] = 0;
             write(fd, buf, 1);
             printf("File created: %s (fd %d)\n", arg1, fd);
             close(fd);
@@ -600,8 +599,7 @@ void login(int fd_stdin, int fd_stdout, int *isLogin, char *user, char *pass)
     else
     {
         //文件不存在，写一个空的进去
-        char temp[1024];
-        temp[0] = 0;
+        char temp[1024] = {0};
         write(fd, temp, 1);
         close(fd);
         //给文件赋值
@@ -720,7 +718,7 @@ int verifyFilePass(char *path, int fd_stdin)
 
     struct dir_entry *pde = find_entry(path);
 
-    printl(pde->pass);
+    /*printl(pde->pass);*/
 
     if (strcmp(pde->pass, "") == 0)
         return 1;
@@ -739,13 +737,16 @@ void doEncrypt(char *path, int fd_stdin)
     //查找文件
     /*struct dir_entry *pde = find_entry(path);*/
 
-    char pass[128];
+    char pass[128] = {0};
 
     printl("Please input the new file password: ");
     read(fd_stdin, pass, 128);
 
     if (strcmp(pass, "") == 0)
-        strstr(pass, "");
+    {
+        /*printl("A blank password!\n");*/
+        strcpy(pass, "");
+    }
     //以下内容用于加密
     int i, j;
 
