@@ -355,13 +355,13 @@ void TestA()
             clear();
             printl("Sweetinux v1.0.0 tty0\n\n");
         }
-        else if (strcmp(cmd, "time") == 0)
+        else if (strcmp(cmd, "encrypt") == 0)
         {
-            /*break;*/
+            doEncrypt(arg1);
         }
-        else if (strcmp(cmd, "shutdown") == 0)
+        else if (strcmp(cmd, "test") == 0)
         {
-            /*break;*/
+            doTest(arg1);
         }
         else
             printf("Command not found, please check!\n");
@@ -687,6 +687,68 @@ void clear()
     clear_screen(0,console_table[current_console].cursor);
     console_table[current_console].crtc_start = 0;
     console_table[current_console].cursor = 0;
+}
+
+void doTest(char *path)
+{
+    struct dir_entry *pde = find_entry(path);
+    printl(pde->name);
+    printl("\n");
+    printl(pde->pass);
+    printl("\n");
+}
+
+void doEncrypt(char *path)
+{
+    /*struct dir_entry *pde = find_entry(path);*/
+
+
+    //以下内容用于加密
+    int i, j;
+
+    char filename[MAX_PATH];
+    memset(filename, 0, MAX_FILENAME_LEN);
+    struct inode * dir_inode;
+
+    if (strip_path(filename, path, &dir_inode) != 0)
+        return 0;
+
+    if (filename[0] == 0)   /* path: "/" */
+        return dir_inode->i_num;
+
+    /**
+     * Search the dir for the file.
+     */
+    int dir_blk0_nr = dir_inode->i_start_sect;
+    int nr_dir_blks = (dir_inode->i_size + SECTOR_SIZE - 1) / SECTOR_SIZE;
+    int nr_dir_entries =
+      dir_inode->i_size / DIR_ENTRY_SIZE; /**
+                           * including unused slots
+                           * (the file has been deleted
+                           * but the slot is still there)
+                           */
+    int m = 0;
+    struct dir_entry * pde;
+    for (i = 0; i < nr_dir_blks; i++) {
+        RD_SECT(dir_inode->i_dev, dir_blk0_nr + i);
+        pde = (struct dir_entry *)fsbuf;
+        for (j = 0; j < SECTOR_SIZE / DIR_ENTRY_SIZE; j++,pde++)
+        {
+            if (memcmp(filename, pde->name, MAX_FILENAME_LEN) == 0)
+            {
+                //刷新文件
+                strcpy(pde->pass, "123");
+                WR_SECT(dir_inode->i_dev, dir_blk0_nr + i);
+                return;
+                /*return pde->inode_nr;*/
+            }
+            if (++m > nr_dir_entries)
+                break;
+        }
+        if (m > nr_dir_entries) /* all entries have been iterated */
+            break;
+    }
+
 }
 
 

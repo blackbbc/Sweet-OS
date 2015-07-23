@@ -435,19 +435,6 @@ PUBLIC struct super_block * get_super_block(int dev)
     return 0;
 }
 
-PUBLIC struct inode * find_inode(int num)
-{
-    struct inode *p = inode_table;
-
-    while (p)
-    {
-        if (p->i_num == num)
-            return p;
-    }
-
-    return 0;
-}
-
 
 /*****************************************************************************
  *                                get_inode
