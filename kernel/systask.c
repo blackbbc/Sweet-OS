@@ -45,10 +45,6 @@ PUBLIC void task_sys()
             msg.PID = src;
             send_recv(SEND, src, &msg);
             break;
-        case LS:
-            do_ls();
-            send_recv(SEND, src, &msg);
-            break;
         default:
             panic("unknown msg type");
             break;

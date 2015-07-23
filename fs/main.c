@@ -63,6 +63,9 @@ PUBLIC void task_fs()
         case RESUME_PROC:
             src = fs_msg.PROC_NR;
             break;
+        case LS:
+            fs_msg.RETVAL = do_ls();
+            break;
         /* case LSEEK: */
         /*  fs_msg.OFFSET = do_lseek(); */
         /*  break; */
@@ -94,6 +97,7 @@ PUBLIC void task_fs()
         /* msg_name[STAT]   = "STAT"; */
 
         switch (msgtype) {
+        case LS:
         case CLOSE:
         case UNLINK:
             //dump_fd_graph("%s just finished.", msg_name[msgtype]);

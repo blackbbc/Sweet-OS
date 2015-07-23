@@ -761,6 +761,7 @@ int game(int fd_stdin){
     int state = 0;
     char keys[128];
     while(1){
+        printl("Init Matrix\n");
         mat_init(mat);
 
         while(1){
@@ -827,11 +828,14 @@ int mat_init(int *mat)
     //给一个随机数
     /*srand(546852);*/
     mat_insert(mat);
+    mat_insert(mat);
     mat_print(mat);
     return 0;
 }
 
 int mat_left(int *mat){
+    printl("Left\n");
+
     int i,j;
     int flag=0;
     int k=0,temp[4]={0},last=0;
@@ -864,6 +868,8 @@ int mat_left(int *mat){
 }
 
 int mat_right(int *mat){
+    printl("Right\n");
+
     int i,j;
     int flag=0;
     int k=0,temp[4]={0},last=0;
@@ -896,6 +902,8 @@ int mat_right(int *mat){
 }
 
 int mat_up(int *mat){
+    printl("Up\n");
+
     int i,j;
     int flag=0;
 
@@ -903,9 +911,9 @@ int mat_up(int *mat){
     for(i=0;i<4;i++){
         memset(temp,0,sizeof(int)*4);
         for(j=0,k=0,last=0;j<4;j++){
-            if(mat[i*4+j]!=0){
+            if(mat[j*4+i]!=0){
                 temp[k]=mat[i*4+j];
-                mat[i*4+j]=0;
+                mat[j*4+i]=0;
                 last=j+1;
                 k++;
             }
@@ -920,7 +928,7 @@ int mat_up(int *mat){
         }
         for(j=0,k=0;k<4;k++){
             if(temp[k]!=0){
-                mat[i*4+j]=temp[k];
+                mat[j*4+i]=temp[k];
                 j++;
             }
         }
@@ -929,6 +937,8 @@ int mat_up(int *mat){
 }
 
 int mat_down(int *mat){
+    printl("Down\n");
+
     int i,j;
     int flag=0;
     int k=0,temp[4]={0},last=0;
@@ -994,7 +1004,7 @@ void mat_print(int *mat){
     for(i = 0; i < 4; i++){
         for(j = 0; j < 4; j++){
             //这里需要规格化
-            printf("    %d", mat[i*4+j]);
+            printf("%4d", mat[i*4+j]);
         }
         printf("\n");
     }

@@ -31,7 +31,7 @@ PUBLIC int ls()
     MESSAGE msg;
     msg.type = LS;
 
-    send_recv(BOTH, TASK_SYS, &msg);
+    send_recv(BOTH, TASK_FS, &msg);
 
     return msg.RETVAL;
 }
