@@ -25,6 +25,8 @@
 PRIVATE void init_fs();
 PRIVATE void mkfs();
 PRIVATE void read_super_block(int dev);
+PRIVATE int fs_fork();
+PRIVATE int fs_exit();
 
 /*****************************************************************************
  *                                task_fs
@@ -66,12 +68,12 @@ PUBLIC void task_fs()
 		/* case LSEEK: */
 		/* 	fs_msg.OFFSET = do_lseek(); */
 		/* 	break; */
-		/* case FORK: */
-		/* 	fs_msg.RETVAL = fs_fork(); */
-		/* 	break; */
-		/* case EXIT: */
-		/* 	fs_msg.RETVAL = fs_exit(); */
-		/* 	break; */
+		case FORK:
+		 	fs_msg.RETVAL = fs_fork();
+		 	break;
+		case EXIT:
+		 	fs_msg.RETVAL = fs_exit();
+		 	break;
 		/* case STAT: */
 		/* 	fs_msg.RETVAL = do_stat(); */
 		/* 	break; */
@@ -170,6 +172,53 @@ PRIVATE void init_fs()
 
 	root_inode = get_inode(ROOT_DEV, ROOT_INODE);
 
+}
+
+/*****************************************************************************
+ *                                fs_fork
+ *****************************************************************************/
+/**
+ * Perform the aspects of fork() that relate to files.
+ * 
+ * @return Zero if success, otherwise a negative integer.
+ *****************************************************************************/
+PRIVATE int fs_fork()
+{
+    int i;
+    struct proc* child = &proc_table[fs_msg.PID];
+    for (i = 0; i < NR_FILES; i++) {
+        if (child->filp[i]) {
+            child->filp[i]->fd_cnt++;
+            child->filp[i]->fd_inode->i_cnt++;
+        }
+    }
+
+    return 0;
+}
+
+/*****************************************************************************
+ *                                fs_exit
+ *****************************************************************************/
+/**
+ * Perform the aspects of exit() that relate to files.
+ * 
+ * @return Zero if success.
+ *****************************************************************************/
+PRIVATE int fs_exit()
+{
+    int i;
+    struct proc* p = &proc_table[fs_msg.PID];
+    for (i = 0; i < NR_FILES; i++) {
+        if (p->filp[i]) {
+            /* release the inode */
+            p->filp[i]->fd_inode->i_cnt--;
+            /* release the file desc slot */
+            if (--p->filp[i]->fd_cnt == 0)
+                p->filp[i]->fd_inode = 0;
+            p->filp[i] = 0;
+        }
+    }
+    return 0;
 }
 
 /*****************************************************************************

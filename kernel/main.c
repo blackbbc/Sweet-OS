@@ -28,7 +28,7 @@ PUBLIC int kernel_main()
     struct task* p_task;
     struct proc* p_proc= proc_table;
     char* p_task_stack = task_stack + STACK_SIZE_TOTAL;
-    u16   selector_ldt = SELECTOR_LDT_FIRST;
+    // u16   selector_ldt = SELECTOR_LDT_FIRST;
     u8    privilege;
     u8    rpl;
     int   eflags;
@@ -36,6 +36,12 @@ PUBLIC int kernel_main()
     int   prio;
     for (i = 0; i < NR_TASKS+NR_PROCS; i++)
     {
+        if (i >= NR_TASKS + NR_NATIVE_PROCS) {
+            p_proc->p_flags = FREE_SLOT;
+            p_proc++;
+            p_task++;
+            continue;
+        }
         if (i < NR_TASKS)
         {     /* 任务 */
             p_task    = task_table + i;
@@ -54,21 +60,56 @@ PUBLIC int kernel_main()
         }
 
         strcpy(p_proc->name, p_task->name); /* 设定进程名称 */
-        p_proc->pid = i;            /* 设定pid */
+        p_proc->p_parent = NO_TASK;
 
-        p_proc->ldt_sel = selector_ldt;
+        if (strcmp(p_task->name, "Init") != 0) {
+            p_proc->ldts[INDEX_LDT_C]  = gdt[SELECTOR_KERNEL_CS >> 3];
+            p_proc->ldts[INDEX_LDT_RW] = gdt[SELECTOR_KERNEL_DS >> 3];
 
-        memcpy(&p_proc->ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3],
-               sizeof(struct descriptor));
-        p_proc->ldts[0].attr1 = DA_C | privilege << 5;
-        memcpy(&p_proc->ldts[1], &gdt[SELECTOR_KERNEL_DS >> 3],
-               sizeof(struct descriptor));
-        p_proc->ldts[1].attr1 = DA_DRW | privilege << 5;
-        p_proc->regs.cs = (0 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
-        p_proc->regs.ds = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
-        p_proc->regs.es = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
-        p_proc->regs.fs = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
-        p_proc->regs.ss = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+            /* change the DPLs */
+            p_proc->ldts[INDEX_LDT_C].attr1  = DA_C   | privilege << 5;
+            p_proc->ldts[INDEX_LDT_RW].attr1 = DA_DRW | privilege << 5;
+        }
+        else {      /* INIT process */
+            unsigned int k_base;
+            unsigned int k_limit;
+            int ret = get_kernel_map(&k_base, &k_limit);
+            assert(ret == 0);
+            init_descriptor(&p_proc->ldts[INDEX_LDT_C],
+                  0, /* bytes before the entry point
+                      * are useless (wasted) for the
+                      * INIT process, doesn't matter
+                      */
+                  (k_base + k_limit) >> LIMIT_4K_SHIFT,
+                  DA_32 | DA_LIMIT_4K | DA_C | privilege << 5);
+
+            init_descriptor(&p_proc->ldts[INDEX_LDT_RW],
+                  0, /* bytes before the entry point
+                      * are useless (wasted) for the
+                      * INIT process, doesn't matter
+                      */
+                  (k_base + k_limit) >> LIMIT_4K_SHIFT,
+                  DA_32 | DA_LIMIT_4K | DA_DRW | privilege << 5);
+        }
+
+        // memcpy(&p_proc->ldts[INDEX_LDT_C], &gdt[SELECTOR_KERNEL_CS >> 3],
+        //        sizeof(struct descriptor));
+        // p_proc->ldts[0].attr1 = DA_C | privilege << 5;
+        // memcpy(&p_proc->ldts[INDEX_LDT_RW], &gdt[SELECTOR_KERNEL_DS >> 3],
+        //        sizeof(struct descriptor));
+        // p_proc->ldts[1].attr1 = DA_DRW | privilege << 5;
+
+        // p_proc->regs.cs = (0 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+        // p_proc->regs.ds = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+        // p_proc->regs.es = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+        // p_proc->regs.fs = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+        // p_proc->regs.ss = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | rpl;
+        // p_proc->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | rpl;
+        p_proc->regs.cs = INDEX_LDT_C << 3 | SA_TIL | rpl;
+        p_proc->regs.ds =
+            p_proc->regs.es =
+            p_proc->regs.fs =
+            p_proc->regs.ss = INDEX_LDT_RW << 3 | SA_TIL | rpl;
         p_proc->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | rpl;
 
         p_proc->regs.eip = (u32)p_task->initial_eip;
@@ -84,6 +125,7 @@ PUBLIC int kernel_main()
         p_proc->has_int_msg = 0;
         p_proc->q_sending = 0;
         p_proc->next_sending = 0;
+        p_proc->pid = i;
 
         for (j = 0; j < NR_FILES; j++)
             p_proc->filp[j] = 0;
@@ -93,7 +135,7 @@ PUBLIC int kernel_main()
         p_task_stack -= p_task->stacksize;
         p_proc++;
         p_task++;
-        selector_ldt += 1 << 3;
+        // selector_ldt += 1 << 3;
     }
 
         /* proc_table[NR_TASKS + 0].nr_tty = 0; */
@@ -111,6 +153,41 @@ PUBLIC int kernel_main()
     restart();
 
     while(1){}
+}
+
+
+void nothing(){
+}
+
+
+void Init_test()
+{
+    char tty_name[] = "/dev_tty2";
+
+    char rdbuf[128];
+
+
+    int fd_stdin  = open(tty_name, O_RDWR);
+    assert(fd_stdin  == 0);
+    int fd_stdout = open(tty_name, O_RDWR);
+    assert(fd_stdout == 1);
+
+    printf("Init() is running ...\n");
+
+    while(1) {
+        int r = read(fd_stdin, rdbuf, 70);
+        rdbuf[r] = 0;
+        printf("Before fork()");
+        int pid = fork();
+        if (pid != 0) { /* parent process */
+            printf("parent is running, child pid:%d\n", pid);
+            spin("parent");
+        }
+        else {  /* child process */
+            printf("child is running, pid:%d\n", getpid());
+            spin("child");
+        }
+    }
 }
 
 
@@ -193,6 +270,43 @@ void TestA()
             printf("                        ==================================\n");
         }
 
+        else if (strcmp(rdbuf, "getpid") == 0) {
+            printf(asm_strcat(getpid(), "\n"));
+            printi(getpid());
+            printf("\n");
+            printi(new_getpid());
+            printf("\n");
+        }
+
+        else if (strcmp(rdbuf, "test_fork") == 0) {
+            int pid = fork();
+            if (pid == 0) {
+            } else {
+                printl("childpid: %d, childname: %s\n", pid, proc_table[pid].name);
+            }
+        }
+
+        else if (strcmp(rdbuf, "test_ldt") == 0) {
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[0].ldts[INDEX_LDT_C].base_high, proc_table[0].ldts[INDEX_LDT_C].base_mid, proc_table[0].ldts[INDEX_LDT_C].base_low);
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[1].ldts[INDEX_LDT_C].base_high, proc_table[1].ldts[INDEX_LDT_C].base_mid, proc_table[1].ldts[INDEX_LDT_C].base_low);
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[2].ldts[INDEX_LDT_C].base_high, proc_table[2].ldts[INDEX_LDT_C].base_mid, proc_table[2].ldts[INDEX_LDT_C].base_low);
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[3].ldts[INDEX_LDT_C].base_high, proc_table[3].ldts[INDEX_LDT_C].base_mid, proc_table[3].ldts[INDEX_LDT_C].base_low);
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[4].ldts[INDEX_LDT_C].base_high, proc_table[4].ldts[INDEX_LDT_C].base_mid, proc_table[4].ldts[INDEX_LDT_C].base_low);
+            printl("{MM} base_high: %d, bsae_mid: %d, low: %d)\n", proc_table[5].ldts[INDEX_LDT_C].base_high, proc_table[5].ldts[INDEX_LDT_C].base_mid, proc_table[5].ldts[INDEX_LDT_C].base_low);
+            int k_base, k_limit;
+            get_kernel_map(&k_base, &k_limit);
+            printl("0x%x, 0x%x\n", k_base, k_limit);
+            // struct proc* p_proc= proc_table+5;
+            // printl("{MM} %d, %d, %d, %d)\n", p_proc->ldts[INDEX_LDT_C], p_proc->ldts[INDEX_LDT_RW], p_proc->ldts[INDEX_LDT_C].attr1, p_proc->ldts[INDEX_LDT_RW].attr1);
+            // struct descriptor* ppd = &(proc_table[5].ldts[INDEX_LDT_RW]);
+            // printl("{MM} %d,%d,%d,%d,%d,%d)\n", ppd->limit_low, ppd->base_low,  ppd->base_high, ppd->base_mid, ppd->attr1, ppd->limit_high_attr2, ppd->base_high);
+            int i;
+            for (i = 0; i < NR_TASKS + NR_NATIVE_PROCS ; ++i) {
+                struct descriptor* ppd = &(proc_table[i].ldts[INDEX_LDT_RW]);
+                printl("{MM} %s, %x,%x,%x,%x,%x,%x)\n", proc_table[i].name, ppd->limit_low, ppd->base_low,  ppd->base_mid, ppd->base_high, ppd->attr1, ppd->limit_high_attr2);
+                
+            }
+        }
 
         else
             printf("Command not found, please check!\n");
@@ -799,13 +913,13 @@ void ProcessManage()
 {
     int i;
     printf("=============================================================================\n");
-    printf("      myID      |    name       | spriority    | running?\n");
+    printf("      PID      |    name       | spriority    | running?\n");
     //进程号，进程名，优先级，是否是系统进程，是否在运行
     printf("-----------------------------------------------------------------------------\n");
     for ( i = 0 ; i < NR_TASKS + NR_PROCS ; ++i )//逐个遍历
     {
         /*if ( proc_table[i].priority == 0) continue;//系统资源跳过*/
-        printf("        %d           %s            %d                yes\n", proc_table[i].pid, proc_table[i].name, proc_table[i].priority);
+        printf("        %d           %s            %d                %s\n", proc_table[i].pid, proc_table[i].name, proc_table[i].priority, proc_table[i].p_flags==FREE_SLOT? "NO":"YES");
     }
     printf("=============================================================================\n");
 }

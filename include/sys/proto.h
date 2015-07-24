@@ -24,6 +24,8 @@ PUBLIC char*	strcpy(char* dst, const char* src);
 /* protect.c */
 PUBLIC void	init_prot();
 PUBLIC u32	seg2phys(u16 seg);
+PUBLIC void init_descriptor(struct descriptor * p_desc,
+        u32 base, u32 limit, u16 attribute);
 
 /* klib.c */
 PUBLIC void	delay(int time);
@@ -35,9 +37,11 @@ PUBLIC void restart();
 
 /* main.c */
 PUBLIC int  get_ticks();
+PUBLIC void Init_test();
 PUBLIC void TestA();
 PUBLIC void TestB();
 PUBLIC void TestC();
+void nothing();
 PUBLIC void panic(const char *fmt, ...);
 
 /* i8259.c */
@@ -65,6 +69,16 @@ PUBLIC void dump_tty_buf();	/* for debug only */
 
 /* systask.c */
 PUBLIC void task_sys();
+
+/* mm/main.c */
+PUBLIC void     task_mm();
+PUBLIC int      alloc_mem(int pid, int memsize);
+PUBLIC int      free_mem(int pid);
+
+/* mm/func.c */
+PUBLIC int      mm_fork();
+PUBLIC void     mm_exit(int status);
+PUBLIC void     mm_wait();
 
 /* fs/main.c */
 PUBLIC void			task_fs();

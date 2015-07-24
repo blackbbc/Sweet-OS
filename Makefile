@@ -33,6 +33,8 @@ OBJS		= kernel/kernel.o lib/syscall.o kernel/start.o kernel/main.o\
 			lib/kliba.o lib/klib.o lib/string.o lib/misc.o\
 			lib/open.o lib/read.o lib/write.o lib/close.o lib/unlink.o\
 			lib/getpid.o lib/syslog.o\
+			lib/fork.o lib/exit.o lib/sleep.o lib/wait.o\
+			mm/main.o mm/func.o\
 			fs/main.o fs/open.o fs/misc.o fs/read_write.o\
 			fs/link.o\
 			fs/disklog.o
@@ -171,5 +173,11 @@ fs/link.o: fs/link.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 fs/disklog.o: fs/disklog.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+mm/main.o: mm/main.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+mm/func.o: mm/func.c
 	$(CC) $(CFLAGS) -o $@ $<
 

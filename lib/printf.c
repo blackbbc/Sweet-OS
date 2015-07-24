@@ -84,6 +84,26 @@ PUBLIC int printf(const char *fmt, ...)
 	return i;
 }
 
+PUBLIC int printi(u32 num, ...)
+{
+    char* tmp = "aspypypypypypypypypypy1234567890";
+    tmp = itoa(tmp, num);
+    const char *fmt = tmp+2;
+	int i;
+	char buf[STR_DEFAULT_LEN];
+
+	va_list arg = (va_list)((char*)(&fmt) + 4); /**
+						     * 4: size of `fmt' in
+						     *    the stack
+						     */
+	i = vsprintf(buf, fmt, arg);
+	int c = write(1, buf, i);
+
+	assert(c == i);
+
+	return i;
+}
+
 /*****************************************************************************
  *                                printl
  *****************************************************************************/

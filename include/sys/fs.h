@@ -125,6 +125,7 @@ struct dir_entry {
 struct file_desc {
 	int		fd_mode;	/**< R or W */
 	int		fd_pos;		/**< Current position for R/W. */
+    int     fd_cnt;     /**< How many procs share this desc */
 	struct inode*	fd_inode;	/**< Ptr to the i-node */
 };
 

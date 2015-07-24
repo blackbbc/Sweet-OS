@@ -12,6 +12,7 @@ global	memcpy
 global	memset
 global  strcpy
 global  strlen
+global  asm_strcat
 
 
 ; ------------------------------------------------------------------------
@@ -113,6 +114,39 @@ strcpy:
 	pop     ebp
 	ret                     ; 函数结束，返回
 ; strcpy 结束-------------------------------------------------------------
+
+
+asm_strcat:
+	push	ebp
+	mov	ebp, esp
+
+	push	esi
+	push	edi
+	push	ecx
+
+	mov	edi, [ebp + 8]	; Destination
+	mov	esi, [ebp + 12]	; Source
+    mov ecx, -1
+    xor al, al
+    cld
+    repnz
+    scasb
+
+    dec edi
+.1:
+    lodsb
+    stosb
+    test al, al
+    jnz .1
+	mov	eax, [ebp + 8]	; 返回值
+
+	pop	ecx
+	pop	edi
+	pop	esi
+	mov	esp, ebp
+	pop	ebp
+
+	ret			; 函数结束，返回
 
 
 ; ------------------------------------------------------------------------

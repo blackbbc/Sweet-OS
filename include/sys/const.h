@@ -43,9 +43,12 @@
 /* Process */
 #define SENDING   0x02	/* set when proc trying to send */
 #define RECEIVING 0x04	/* set when proc trying to recv */
+#define WAITING   0x08  /* set when proc waiting for the child to terminate */
+#define HANGING   0x10  /* set when proc exits without being waited by parent */
+#define FREE_SLOT 0x20  /* set when proc table entry is not used
 
 /* TTY */
-#define NR_CONSOLES	4	/* consoles */
+#define NR_CONSOLES	3	/* consoles */
 
 /* 8259A interrupt controller ports. */
 #define	INT_M_CTL	0x20	/* I/O port for interrupt controller         <Master> */
@@ -100,10 +103,12 @@
 /* 注意 TASK_XXX 的定义要与 global.c 中对应 */
 #define INVALID_DRIVER	-20
 #define INTERRUPT	-10
-#define TASK_TTY	0
-#define TASK_SYS	1
-#define TASK_HD		2
-#define TASK_FS		3
+#define TASK_TTY    0
+#define TASK_SYS    1
+#define TASK_HD     2
+#define TASK_FS     3
+#define TASK_MM     4
+// #define INIT        5
 /* #define TASK_MM	4 */
 #define ANY		(NR_TASKS + NR_PROCS + 10)
 #define NO_TASK		(NR_TASKS + NR_PROCS + 20)
@@ -137,7 +142,7 @@ enum msgtype {
 	HARD_INT = 1,
 
 	/* SYS task */
-	GET_TICKS, GET_PID,
+	GET_TICKS, GET_PID, FORK, EXEC, WAIT, SLEEP, EXIT,
 
 	/* FS */
 	OPEN, CLOSE, READ, WRITE, LSEEK, STAT, UNLINK,
@@ -174,7 +179,7 @@ enum msgtype {
 #define	WHENCE		u.m3.m3i3
 
 #define	PID		u.m3.m3i2
-/* #define	STATUS		u.m3.m3i1 */
+#define	STATUS		u.m3.m3i1
 #define	RETVAL		u.m3.m3i1
 
 
